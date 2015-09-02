@@ -29,7 +29,7 @@ Traduzir todos [cursos disponíveis](https://github.com/swirldev/swirl_courses) 
 
 Cada curso possui várias aulas, veja um exemplo [aqui](https://github.com/swirldev/swirl_courses/tree/master/R_Programming) (cada pasta representa uma aula).
 
-Este é projeto é 100% voluntário. 
+Este projeto é 100% voluntário. 
 
 _Todos os cursos traduzidos serão sempre livres, gratuitos e abertos._ :smile:
  
