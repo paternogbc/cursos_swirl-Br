@@ -56,7 +56,7 @@ Caso tenha alguma dúvida, entre em contato: paternogbc@gmail.com
 
 ## Reconhecimento
 
-Todos os voluntários receberão crédito pelas traduções realizadas e serão incluídos na lista de colaboradores do __swirl-Br__.
+ * Todos os voluntários receberão crédito pelas traduções realizadas e serão incluídos na lista de colaboradores do __swirl-Br__.
 
 ## Cursos em tradução:
  1. [R Programming](https://github.com/swirldev/swirl_courses/tree/master/R_Programming_Alt)
