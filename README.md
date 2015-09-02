@@ -34,6 +34,7 @@ _Todos os cursos traduzidos serão sempre livres, gratuitos e abertos._ :smile:
 
  * Convide amigos para ajudar na tradução
  * Ajude a traduzir os materiais
+ * Ajude a revisar as traduções
 
 Se você gostaria de ajudar na __tradução__ dos materiais, siga os próximos passos:
 
@@ -52,6 +53,10 @@ Se você gostaria de ajudar na __revisão__ dos materiais, siga os próximos pas
 Após o registro de um novo issue, entraremos em contato o mais breve possível para passar as orientações de como contribuir.
 
 Caso tenha alguma dúvida, entre em contato: paternogbc@gmail.com
+
+## Reconhecimento
+
+Todos os voluntários receberão crédito pelas traduções realizadas e serão incluídos na lista de colaboradores do __swirl-Br__.
 
 ## Cursos em tradução:
  1. [R Programming](https://github.com/swirldev/swirl_courses/tree/master/R_Programming_Alt)
