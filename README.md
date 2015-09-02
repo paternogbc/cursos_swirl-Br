@@ -43,7 +43,7 @@ _Todos os cursos traduzidos serão sempre livres, gratuitos e abertos._ :smile:
   * Título: Tradutor Voluntário: seu_nome
   * Breve descrição da sua experiência em R (uma ou duas frases)
 
-##### Se você gostaria de ajudar na __revisão__ dos materiais, siga os próximos passos:
+##### Se você gostaria de ajudar na __revisão__ das traduções, siga os próximos passos:
 
  1. Crie uma conta no [Github](https://github.com)
  2. Crie um novo [issue](https://github.com/paternogbc/cursos_swirl/issues/new)
