@@ -1,3 +1,5 @@
+![](http://i.imgur.com/fNC9TLa.jpg)
+
 # swirl-Br
 
 Cursos [swirl](http://swirlstats.com/) traduzidos para o português.
