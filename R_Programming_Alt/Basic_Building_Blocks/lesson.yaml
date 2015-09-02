@@ -1,20 +1,21 @@
 - Class: meta
-  Course: R Programming
-  Lesson: Basic Building Blocks
-  Author: Nick Carchedi
+  Course: Programação em R
+  Lesson: Componentes básicos
+  Author: Nick Carchedi, Gustavo Paterno
   Type: Standard
   Organization: JHU Biostat
   Version: 2.2.0
 
 - Class: text
-  Output: In this lesson, we will explore some basic building blocks of the R programming
-    language.
+  Output: Nesta aula iremos explorar os componentes básicos da linguagem de Programação
+  R.
 
 - Class: text
-  Output: If at any point you'd like more information on a particular topic related
-    to R, you can type help.start() at the prompt, which will open a menu of resources
-    (either within RStudio or your default web browser, depending on your setup).
-    Alternatively, a simple web search often yields the answer you're looking for.
+  Output: Se em algum momento da aula você precisar de mais informaçẽs sobre o R,
+  apenas digite help.start() no console ("prompt"). Esse comando irá abrir um menu
+  de recursos (no RStudio ou no seu navegador de internet, dependendo da sua configuração).
+  Por outro lado, uma simples busca na internet geralmente fornece a resposta que você está
+  procurando.
 
 - Class: cmd_question
   Output: In its simplest form, R can be used as an interactive calculator. Type
