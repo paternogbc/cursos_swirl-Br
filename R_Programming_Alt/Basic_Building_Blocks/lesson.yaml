@@ -3,7 +3,7 @@
   Lesson: Componentes básicos
   Author: Nick Carchedi
   Type: Standard
-  Organization: JHU Biostat
+  Organization: JHU Biostat, Gustavo Paterno
   Version: 2.2.0
 
 - Class: text
@@ -18,8 +18,8 @@
     procurando.
 
 - Class: cmd_question
-  Output: In its simplest form, R can be used as an interactive calculator. Type
-    5 + 7 and press Enter.
+  Output: Em sua forma mais simples, o R pode ser utilizado como uma calculadora interativa. Digite
+  5 + 7 e aperte enter.
   CorrectAnswer: 5 + 7
   AnswerTests: omnitest(correctExpr='5 + 7')
   Hint: Type 5 + 7 and press Enter.
