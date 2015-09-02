@@ -1,6 +1,6 @@
 # swirl-Br
 
-Cursos [swirl](http://swirlstats.com/) para aprender R traduzidos para o português.
+Cursos [swirl](http://swirlstats.com/) traduzidos para o português.
 
 O swirl é um pacote incrível! Foi desenvolvido para ajudar professores no ensino de estatística no R.
 O pacote funciona de forma dinâmica no próprio R. 
