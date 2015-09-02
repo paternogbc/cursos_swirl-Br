@@ -55,11 +55,17 @@ _Todos os cursos traduzidos serão sempre livres, gratuitos e abertos._ :smile:
 
 Após o registro de um novo issue, entraremos em contato o mais breve possível para passar as orientações de como contribuir.
 
-Caso tenha alguma dúvida, entre em contato: paternogbc@gmail.com
+#### Dúvidas?
 
-## Reconhecimento
+Caso tenha alguma dúvida, deixe uma mensagem [aqui](https://github.com/paternogbc/cursos_swirl-Br/issues/1) ou entre em 
+contato: paternogbc@gmail.com
+
+***
+
+## Crédito
 
  * Todos os voluntários receberão crédito pelas traduções realizadas e serão incluídos na lista de colaboradores do __swirl-Br__.
+ * Seu nome será incluído como autor das aulas que vc traduzir.
 
 ## Cursos em tradução:
  1. [R Programming](https://github.com/swirldev/swirl_courses/tree/master/R_Programming_Alt)
