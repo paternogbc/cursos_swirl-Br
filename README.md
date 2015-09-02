@@ -28,6 +28,7 @@ Traduzir todos [cursos disponíveis](https://github.com/swirldev/swirl_courses) 
 Cada curso possui várias aulas. Veja um exemplo [aqui](https://github.com/swirldev/swirl_courses/tree/master/R_Programming) (cada pasta representa uma aula).
 
 Este é projeto é 100% voluntário. 
+
 _Todos os cursos traduzidos serão sempre livres, gratuitos e abertos._ :smile:
  
 ## Como ajudar?
@@ -35,11 +36,18 @@ _Todos os cursos traduzidos serão sempre livres, gratuitos e abertos._ :smile:
  * Convide amigos para ajudar na tradução
  * Ajude a traduzir os materiais
 
-Se você gostaria de ajudar na tradução, siga os próximos passos:
+Se você gostaria de ajudar na __tradução__ dos materiais, siga os próximos passos:
 
  1. Crie uma conta no [Github](https://github.com)
  2. Crie um novo [issue](https://github.com/paternogbc/cursos_swirl/issues/new)
   * Título: Tradutor Voluntário: seu_nome
+  * Breve descrição da sua experiência em R (uma ou duas frases)
+
+Se você gostaria de ajudar na __revisão__ dos materiais, siga os próximos passos:
+
+ 1. Crie uma conta no [Github](https://github.com)
+ 2. Crie um novo [issue](https://github.com/paternogbc/cursos_swirl/issues/new)
+  * Título: Revisor Voluntário: seu_nome
   * Breve descrição da sua experiência em R (uma ou duas frases)
 
 Após o registro de um novo issue, entraremos em contato o mais breve possível para passar as orientações de como contribuir.
@@ -47,6 +55,7 @@ Após o registro de um novo issue, entraremos em contato o mais breve possível 
 Caso tenha alguma dúvida, entre em contato: paternogbc@gmail.com
 
 ## Licença
+
 Este projeto está sob a licença Open Source: [GPL-3](https://github.com/paternogbc/cursos_swirl/blob/master/license)
  
 
