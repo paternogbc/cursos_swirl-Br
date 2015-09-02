@@ -13,7 +13,9 @@ library("swirl")
 swirl()
 ```
 
-> A missão do __swirl-Br__ é traduzir os [cursos disponíveis](https://github.com/swirldev/swirl_courses) para a língua portuguesa. 
+## Missão
+
+Traduzir todos [cursos disponíveis](https://github.com/swirldev/swirl_courses) para a língua portuguesa. 
 
  * R Programming
  * Data Analysis
@@ -26,7 +28,7 @@ swirl()
 Cada curso possui várias aulas. Veja um exemplo [aqui](https://github.com/swirldev/swirl_courses/tree/master/R_Programming) (cada pasta representa uma aula).
 
 Este é projeto é 100% voluntário. 
-> Todos os cursos traduzidos serão sempre livres, gratuitos e abertos.
+_Todos os cursos traduzidos serão sempre livres, gratuitos e abertos._ :smile:
  
 ## Como ajudar?
 
@@ -36,8 +38,8 @@ Este é projeto é 100% voluntário.
 Se você gostaria de ajudar na tradução, siga os próximos passos:
 
  1. Crie uma conta no [Github](https://github.com)
- 2. Crie um novo [issue](https://github.com/paternogbc/cursos_swirl/issues)
-  * Título: Tradutor Voluntário
+ 2. Crie um novo [issue](https://github.com/paternogbc/cursos_swirl/issues/new)
+  * Título: Tradutor Voluntário: seu_nome
   * Breve descrição da sua experiência em R (uma ou duas frases)
 
 Após o registro de um novo issue, entraremos em contato o mais breve possível para passar as orientações de como contribuir.
