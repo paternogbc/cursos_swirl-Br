@@ -45,6 +45,6 @@ Após o registro de um novo issue, entraremos em contato o mais breve possível 
 Caso tenha alguma dúvida, entre em contato: paternogbc@gmail.com
 
 ## Licença
-Este projeto está sob a licença Open Source: GPL-3
+Este projeto está sob a licença Open Source: [GPL-3](https://github.com/paternogbc/cursos_swirl/blob/master/license)
  
 
