@@ -1,21 +1,21 @@
 - Class: meta
   Course: Programação em R
   Lesson: Componentes básicos
-  Author: Nick Carchedi, Gustavo Paterno
+  Author: Nick Carchedi
   Type: Standard
   Organization: JHU Biostat
   Version: 2.2.0
 
 - Class: text
   Output: Nesta aula iremos explorar os componentes básicos da linguagem de Programação
-  R.
+    R.
 
 - Class: text
   Output: Se em algum momento da aula você precisar de mais informaçẽs sobre o R,
-  apenas digite help.start() no console ("prompt"). Esse comando irá abrir um menu
-  de recursos (no RStudio ou no seu navegador de internet, dependendo da sua configuração).
-  Por outro lado, uma simples busca na internet geralmente fornece a resposta que você está
-  procurando.
+    apenas digite help.start() no console ("prompt"). Esse comando irá abrir um menu
+    de recursos (no RStudio ou no seu navegador de internet, dependendo da sua configuração).
+    Por outro lado, uma simples busca na internet geralmente fornece a resposta que você está
+    procurando.
 
 - Class: cmd_question
   Output: In its simplest form, R can be used as an interactive calculator. Type
