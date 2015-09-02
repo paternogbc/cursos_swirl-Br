@@ -4,7 +4,7 @@ Cursos [swirl](http://swirlstats.com/) traduzidos para o português.
 
 > O swirl é um pacote para a linguagem de programação R que transforma o console R em um ambiente interativo de aprendizagem. Os usuários recebem um _feedback_ imediato enquanto são guiados através de aulas de ritmo próprio na ciência de dados e programação em R .
 
-Para ver como o wirl funciona, abra o R e digite no console:
+Para ver como o swirl funciona, abra o R e digite no console:
 
 ```{r}
 install.packages("swirl")
