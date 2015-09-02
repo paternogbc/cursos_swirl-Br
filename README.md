@@ -39,28 +39,7 @@ _Todos os cursos traduzidos serão sempre livres, gratuitos e abertos._ :smile:
  * Ajude a traduzir os materiais
  * Ajude a revisar as traduções
 
-##### Se você gostaria de ajudar na __tradução__ dos materiais, siga os próximos passos:
-
- 1. Crie uma conta no [Github](https://github.com)
- 2. Crie um novo [issue](https://github.com/paternogbc/cursos_swirl/issues/new)
-  * Título: Tradutor Voluntário: seu_nome
-  * Breve descrição da sua experiência em R (uma ou duas frases)
-
-##### Se você gostaria de ajudar na __revisão__ das traduções, siga os próximos passos:
-
- 1. Crie uma conta no [Github](https://github.com)
- 2. Crie um novo [issue](https://github.com/paternogbc/cursos_swirl/issues/new)
-  * Título: Revisor Voluntário: seu_nome
-  * Breve descrição da sua experiência em R (uma ou duas frases)
-
-Após o registro de um novo issue, entraremos em contato o mais breve possível para passar as orientações de como contribuir.
-
-#### Dúvidas?
-
-Caso tenha alguma dúvida, deixe uma mensagem [aqui](https://github.com/paternogbc/cursos_swirl-Br/issues/1) ou entre em 
-contato: paternogbc@gmail.com
-
-***
+Seja um [tradutor voluntário](https://github.com/paternogbc/cursos_swirl-Br/wiki/Como-Ajudar) 
 
 ## Crédito
 
