@@ -22,23 +22,23 @@
   5 + 7 e aperte enter.
   CorrectAnswer: 5 + 7
   AnswerTests: omnitest(correctExpr='5 + 7')
-  Hint: Type 5 + 7 and press Enter.
+  Hint: Aperte 5 + 7 e aperte enter.
 
 - Class: text
-  Output: R simply prints the result of 12 by default. However, R is a programming
-    language and often the reason we use a programming language as opposed to a calculator
-    is to automate some process or avoid unnecessary repetition.
+  Output: Por padrão, o R simplesmente retorna o resultado: 12. No entanto, R é uma linguagem de programação.
+  Geralmente utilizamos programação em vez de calculadoras por que queremos automatizar processos
+  ou evitar reptição desnecessária.
+  
+- Class: text
+  Output: Neste exemplo queremos utilizar o resultado acima em um segundo cálculo.
+  Em vez de repetir 5 + 7 toda vez que for necessário, podemos criar uma variável 
+  que armazena o resultado.
 
 - Class: text
-  Output: In this case, we may want to use our result from above in a second calculation.
-    Instead of retyping 5 + 7 every time we need it, we can just create a new variable
-    that stores the result.
-
-- Class: text
-  Output: 'The way you assign a value to a variable in R is by using the assignment
-    operator, which is just a ''less than'' symbol followed by a ''minus'' sign. It
-    looks like this: <-'
-
+  Output: Para armazenar um valor em uma variável no R, utilizamos o operador de associação,
+  que é simplesmente um sinal de "menos que" (<) seguido de um sinal de menos (-).
+  Ou seja: "<-".
+  
 - Class: text
   Output: Think of the assignment operator as an arrow. You are assigning the value
     on the right side of the arrow to the variable name on the left side of the arrow.
