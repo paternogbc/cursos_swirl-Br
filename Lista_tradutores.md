@@ -3,6 +3,6 @@
 | Tradutor   |      ID      | Curso | Lição atual | Revisão? |
 |----------|:-------------:|:-------------:|:-------------:|:-------------:|
 | Gustavo Paterno | @paternogbc | R Programming|  Basic_Building_Blocks |     Não        |            
-|                 | @dfalbel |  |              |                        |     Não        |
-|                 | @jtrecenti  |              |                        |     Não        |
-|                 | @diogoprov  |              |                        |     Não        |
+|                 | @dfalbel    | R Programming|                        |     Não        |
+|                 | @jtrecenti  | R Programming|                        |     Não        |
+|                 | @diogoprov  | R Programming|                        |     Não        |
