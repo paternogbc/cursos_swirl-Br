@@ -5,4 +5,4 @@
 | Gustavo Paterno | @paternogbc | R Programming|  Basic_Building_Blocks |     Não        |            
 |                 | @dfalbel |  |              |                        |     Não        |
 |                 | @jtrecenti  |              |                        |     Não        |
-|                 | @diogoprov  |              |                        |     Não        |
+|                 | @diogoprov  |              | Looking_at_Data        |     Não        |
