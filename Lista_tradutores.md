@@ -1,8 +1,8 @@
 ### Tradutores voluntários do __sirwl-Br__
 
-| Tradutor   |      ID      | Curso |
-|----------|:-------------:|:-------------:|
-| Gustavo Paterno | @paternogbc | R Programming|
-|                 | @dfalbel |  |              |
-|                 | @jtrecenti  |              |               
-|                 | @diogoprov  |              |               
+| Tradutor   |      ID      | Curso | Lição atual |
+|----------|:-------------:|:-------------:|:-------------:|
+| Gustavo Paterno | @paternogbc | R Programming|  Basic_Building_Blocks |               
+|                 | @dfalbel |  |              |                        |
+|                 | @jtrecenti  |              |                        |
+|                 | @diogoprov  |              |                        |
