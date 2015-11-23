@@ -48,6 +48,10 @@ Seja um [tradutor voluntário](https://github.com/paternogbc/cursos_swirl-Br/wik
 
 ## Cursos em tradução:
  1. [R Programming](https://github.com/swirldev/swirl_courses/tree/master/R_Programming_Alt)
+ 
+## Tradutores voluntários:  
+Confira a lista de voluntários e os cursos em tradução: [Lista de tradutores](https://github.com/paternogbc/cursos_swirl-Br/blob/master/Lista_tradutores.md)
+* Verifique a lista de tradutores para evitar sobreposição das lições e cursos em tradução.
 
 ## Licença
 
