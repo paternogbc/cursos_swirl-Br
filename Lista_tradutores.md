@@ -3,3 +3,6 @@
 | Tradutor   |      ID      | Curso |
 |----------|:-------------:|:-------------:|
 | Gustavo Paterno | @paternogbc | R Programming|
+|                 | @dfalbel |  |              |
+|                 | @jtrecenti  |              |               
+|                 | @diogoprov  |              |               
