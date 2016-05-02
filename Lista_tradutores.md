@@ -6,3 +6,4 @@
 | Daniel Falbel   | @dfalbel    | R Programming|  Functions             |     Não        |
 |                 | @jtrecenti  | R Programming|                        |     Não        |
 |                 | @diogoprov  | R Programming|  Looking_at_Data       |     Não        |
+| Allan Sene | @allansene  | R Programming |  Sequences of Numbers     |     Não        |
