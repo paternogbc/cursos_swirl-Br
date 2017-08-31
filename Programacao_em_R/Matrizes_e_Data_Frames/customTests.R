@@ -11,12 +11,12 @@ expr_creates_var <- function(correctName=NULL){
     results <- expectThat(length(delta) >= 1,
                           testthat::is_true(),
                           label=paste(deparse(e$expr), 
-                                      "does not create a variable."))  
+                                      "não cria uma variável."))  
   } else {
     results <- expectThat(correctName %in% names(delta), 
                           testthat::is_true(), 
                           label=paste(deparse(e$expr),
-                                      "does not create a variable named",
+                                      "não cria uma variável chamada",
                                       correctName))
   }
   if(results$passed){
@@ -74,8 +74,8 @@ omnitest <- function(correctExpr=NULL, correctVal=NULL, strict=FALSE){
   if(valGood && exprGood){
     return(TRUE)
   } else if (valGood && !exprGood && !strict){
-    swirl_out("That's not the expression I expected but it works.")
-    swirl_out("I've executed the correct expression in case the result is needed in an upcoming question.")
+    swirl_out("Não é a expressão que eu esperava, mas funciona.")
+    swirl_out("Eu executei a expressão correta caso ela seja necessária para uma questão futura.")
     eval(parse(text=correctExpr),globalenv())
     return(TRUE)
   } else {
@@ -86,39 +86,39 @@ omnitest <- function(correctExpr=NULL, correctVal=NULL, strict=FALSE){
 
 notify <- function() {
   e <- get("e", parent.frame())
-  if(e$val == "No") return(TRUE)
+  if(e$val == "Não") return(TRUE)
   
   good <- FALSE
   while(!good) {
     # Get info
-    name <- readline_clean("What is your full name? ")
-    address <- readline_clean("What is the email address of the person you'd like to notify? ")
+    name <- readline_clean("Qual é seu nome completo?")
+    address <- readline_clean("Qual é o endereço de e-mail da pessoa que você gostaria de notificar?")
     
     # Repeat back to them
-    message("\nDoes everything look good?\n")
-    message("Your name: ", name, "\n", "Send to: ", address)
+    message("\nEstá tudo correto?\n")
+    message("Seu nome: ", name, "\n", "Enviar para: ", address)
     
-    yn <- select.list(c("Yes", "No"), graphics = FALSE)
-    if(yn == "Yes") good <- TRUE
+    yn <- select.list(c("Sim", "Não"), graphics = FALSE)
+    if(yn == "Sim") good <- TRUE
   }
   
   # Get course and lesson names
   course_name <- attr(e$les, "course_name")
   lesson_name <- attr(e$les, "lesson_name")
   
-  subject <- paste(name, "just completed", course_name, "-", lesson_name)
+  subject <- paste(name, "acabou de completar", course_name, "-", lesson_name)
   body = ""
   
   # Send email
   swirl:::email(address, subject, body)
   
   hrule()
-  message("I just tried to create a new email with the following info:\n")
-  message("To: ", address)
-  message("Subject: ", subject)
-  message("Body: <empty>")
+  message("Eu acabei de tentar criar um novo e-mail com as informações a seguir:\n")
+  message("Para: ", address)
+  message("Assunto: ", subject)
+  message("Corpo: <empty>")
   
-  message("\nIf it didn't work, you can send the same email manually.")
+  message("\nSe não funciou, você pode mandar o mesmo e-mail manualmente.")
   hrule()
   
   # Return TRUE to satisfy swirl and return to course menu
