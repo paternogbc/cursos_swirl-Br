@@ -1,0 +1,142 @@
+- Class: meta
+  Course: Modelos de Regressão
+  Lesson: Respostas Binárias
+  Author: Swirl Coders, Diogo B. Provete (Tradução)
+  Type: Standard
+  Organization: Johns Hopkins Bloomberg School of Public Health
+  Version: 2.2.0
+
+- Class: text
+  Output: "Respostas Binárias. (Os slides desta e de outras disciplinas de Ciência de Dados, em inglês, estão no GitHub, em https://github.com/DataScienceSpecialization/courses. Se quiser usá-los, é preciso baixá-los como arquivo zip e abri-los no seu computador. Esta lição corresponde a Regression_Models/03_02_binaryOutcomes.)"
+
+- Class: text
+  Output: "Muitas vezes nos interessam respostas que têm dois valores, como vivo ou morto, vitória ou derrota, sucesso ou fracasso. Essas respostas são chamadas de binárias, de Bernoulli ou 0/1. Um conjunto de respostas binárias intercambiáveis, com os mesmos valores das covariáveis, forma uma resposta binomial. (As respostas são intercambiáveis se a ordem delas não importa.)"
+
+- Class: text
+  Output: "Nesta unidade, vamos usar glm() para modelar um processo com resposta binária e uma preditora contínua. Também vamos aprender a interpretar os coeficientes de um glm e a obter intervalos de confiança. Mas antes, vamos falar de chances (odds)."
+
+- Class: text
+  Output: "O Baltimore Ravens é um time da NFL, a liga de futebol americano dos Estados Unidos. Digamos que, nos playoffs, eles vençam cerca de 2/3 dos jogos. Ou seja, vencem cerca de duas vezes mais do que perdem. Se eu quisesse apostar neles, teria de oferecer uma chance de 2 para 1 - se perdessem, eu pagaria 2 reais a você; se vencessem, você me pagaria só 1 real. Assim, a longo prazo, depois de muitas apostas, nós dois esperaríamos ganhar tanto quanto perderíamos."
+
+- Class: mult_question
+  Output: "Digamos que, na temporada regular, os Ravens vençam cerca de 55% dos jogos. Que chance eu teria de oferecer na temporada regular?"
+  AnswerChoices: 55 para 45;11 para 9;1.22222 para 1;Qualquer uma destas
+  CorrectAnswer: Qualquer uma destas
+  AnswerTests: omnitest()
+  Hint: "Qualquer resposta serve."
+
+- Class: text
+  Output: "Todas as respostas estão corretas, porque todas representam a mesma razão. Se p é a probabilidade de um evento, a chance (odds) correspondente é p/(1-p)."
+
+- Class: figure
+  Output: "Agora suponha que queremos ver como a chance de vitória dos Ravens depende do ataque. Em outras palavras, queremos modelar como p, ou alguma função de p, depende de quantos pontos os Ravens conseguem marcar. Claro que não podemos observar p; só observamos vitórias, derrotas e os pontos marcados em cada jogo. Aqui está um box plot com as observações de uma temporada."
+  Figure: nevermore.R
+  FigureType: new
+
+- Class: mult_question
+  Output: "Vemos que os Ravens tendem a vencer mais quando marcam mais pontos. De fato, cerca de 3/4 das derrotas ficam em ou abaixo de uma certa pontuação, e cerca de 3/4 das vitórias ficam em ou acima dela. De que pontuação estou falando? (Lembre que as caixas roxas representam 50% das observações, e cada um dos \"T\" deitados, 25%.)"
+  AnswerChoices: 23;18;30;40
+  CorrectAnswer: 23
+  AnswerTests: omnitest(correctVal='23')
+  Hint: "A caixa roxa das derrotas (L) fica à esquerda dessa pontuação, e a das vitórias (W), à direita."
+
+- Class: figure
+  Output: "Houve 9 jogos em que os Ravens marcaram 23 pontos ou menos. Eles venceram 4 desses jogos; então, poderíamos supor que a probabilidade de vitória, dado que marcam 23 pontos ou menos, é de cerca de 1/2."
+  Figure: purple_line.R
+  FigureType: add
+
+- Class: cmd_question
+  Output: "Houve 11 jogos em que os Ravens marcaram 24 pontos ou mais. Eles venceram todos, menos um. Confira você mesmo nos dados, que estão num data frame chamado ravenData. Veja-o digitando ravenData ou View(ravenData)."
+  CorrectAnswer: ravenData
+  AnswerTests: ANY_of_exprs('ravenData', 'View(ravenData)')
+  Hint: "Digite \"ravenData\" para mostrar os dados no console, ou \"View(ravenData)\" para vê-los numa janela separada."
+
+- Class: figure
+  Output: "Vemos uma transição bem rápida no desempenho dos Ravens entre 23 e 28 pontos. Com 23 pontos ou menos, vencem cerca de metade dos jogos; entre 24 e 28 pontos, vencem 3 de 4; e acima de 28 pontos, vencem todos. Isso nos dá uma ideia bem grosseira da relação entre pontos marcados e probabilidade de vitória. Obtemos uma curva em forma de S - ou pelo menos um S rabiscado."
+  Figure: graffiti_s.R
+  FigureType: new
+
+- Class: text
+  Output: "É claro que esperaríamos uma curva real mais suave. Não esperaríamos, por exemplo, que os Ravens vencessem metade dos jogos em que marcassem zero pontos, nem que vencessem todos os jogos em que marcassem mais de 28. Um modelo linear generalizado com essas propriedades supõe que o log da chance de vitória depende linearmente dos pontos. Isto é, log(p/(1-p)) = b0 + b1*pontos. A função de ligação, log(p/(1-p)), se chama logito (logit), e o processo de encontrar os melhores b0 e b1 se chama regressão logística."
+
+- Class: text
+  Output: "Os \"melhores\" b0 e b1 são os que maximizam a verossimilhança do registro real de vitórias e derrotas. A partir dos pontos de um jogo, b0 e b1 nos dão um log da chance, que podemos converter numa probabilidade de vitória, p. Queremos que p seja alta nos pontos dos jogos vencidos e baixa nos pontos das derrotas."
+
+- Class: cmd_question
+  Output: "Podemos usar a função glm() do R para encontrar os b0 e b1 que maximizam a verossimilhança das nossas observações. Voltando ao data frame, queremos prever a resposta binária, ravenWinNum, a partir dos pontos marcados, ravenScore. Isso corresponde à fórmula ravenWinNum ~ ravenScore, que é o primeiro argumento de glm. O segundo argumento, family, descreve a distribuição da resposta, que no nosso caso é binomial. O terceiro argumento são os dados, ravenData. Chame glm com esses argumentos e guarde o resultado numa variável chamada mdl."
+  CorrectAnswer: mdl <- glm(ravenWinNum ~ ravenScore, binomial, ravenData)
+  AnswerTests: creates_glm_model('mdl <- glm(ravenWinNum ~ ravenScore, binomial, ravenData)')
+  Hint: "Use uma expressão como \"mdl <- glm(ravenWinNum ~ ravenScore, binomial, ravenData)\" ou \"mdl <- glm(ravenWinNum ~ ravenScore, family=binomial, data=ravenData)\"."
+
+- Class: figure
+  Output: "A curva preta representa as probabilidades estimadas pela regressão logística com glm(). Ela é mais razoável que a nossa estimativa grosseira em vários aspectos - cresce suavemente com os pontos, estima que cerca de 16 pontos dão aos Ravens 50% de chance de vitória, que 28 pontos dão cerca de 80%, e que 55 pontos tornam a vitória muito provável (cerca de 98%), mas não absolutamente certa."
+  Figure: glm_vs_graffiti.R
+  FigureType: new
+
+- Class: cmd_question
+  Output: "O modelo é menos confiável abaixo de 9 pontos. Afinal, não há dados nessa região; os Ravens marcaram pelo menos 9 pontos em todos os jogos. O modelo lhes dá 33% de chance de vitória se marcarem 9 pontos, o que pode ser razoável, mas também dá 16% de chance de vitória mesmo que não marquem nenhum ponto! Podemos usar a função predict() do R para ver as estimativas do modelo para pontuações mais baixas. A função recebe mdl e um data frame com as pontuações e devolve o log da chance para essas pontuações. Chame predict(mdl, data.frame(ravenScore=c(0, 3, 6))) e guarde o resultado numa variável chamada lodds."
+  CorrectAnswer: lodds <- predict(mdl, data.frame(ravenScore=c(0, 3, 6)))
+  AnswerTests: expr_creates_var('lodds');omnitest('lodds <- predict(mdl, data.frame(ravenScore=c(0, 3, 6)))')
+  Hint: "Digite \"lodds <- predict(mdl, data.frame(ravenScore=c(0, 3, 6)))\" para obter o log da chance de vitória estimado pelo modelo para 0, 3 e 6 pontos."
+
+- Class: cmd_question
+  Output: "Como predict() nos dá o log da chance, precisamos converter para probabilidades. Para isso, use exp(lodds)/(1+exp(lodds)). Não precisa guardar o resultado numa variável; não vamos precisar dele."
+  CorrectAnswer: exp(lodds)/(1+exp(lodds))
+  AnswerTests: omnitest('exp(lodds)/(1+exp(lodds))')
+  Hint: "Digite \"exp(lodds)/(1+exp(lodds))\" para converter o log da chance, lodds, em probabilidades. Essa expressão é a função logito inversa (no R, plogis(lodds) faz a mesma conta; outra opção é predict(mdl, ..., type=\"response\"))."
+
+- Class: cmd_question
+  Output: "Como você pode ver, daria para ganhar muito dinheiro apostando contra este modelo. Quando os Ravens não marcam pontos, o modelo aceitaria uma chance de 16 para 84. Acontece que o modelo não tem tanta certeza assim. Com summary(mdl), você pode ver que os dois coeficientes estimados estão a menos de 2 erros-padrão de zero. Veja o resumo agora."
+  CorrectAnswer: summary(mdl)
+  AnswerTests: omnitest('summary(mdl)')
+  Hint: "Digite \"summary(mdl)\" no prompt do R."
+
+- Class: text
+  Output: "Os coeficientes estimam o log da chance como função linear dos pontos marcados. Eles têm uma interpretação natural em termos de chance, porque, se b0 + b1*pontos estima o log da chance, então exp(b0 + b1*pontos) = exp(b0)exp(b1*pontos) estima a chance. Assim, exp(b0) é a chance de vitória com 0 pontos (no nosso caso, cerca de 16/84), e exp(b1) é o fator pelo qual a chance de vitória é multiplicada a cada ponto marcado - a razão de chances (odds ratio) para um ponto a mais. No nosso caso, exp(b1) = exp(0.10658) = 1.11. Em outras palavras, a chance de vitória aumenta 11% a cada ponto marcado. Repare que é a chance, e não a probabilidade, que aumenta 11%."
+
+- Class: cmd_question
+  Output: "Mas os coeficientes têm erros-padrão relativamente grandes. Um intervalo de confiança de 95% fica, grosso modo, a 2 erros-padrão de cada lado do coeficiente. A função confint() do R calcula os limites inferior e superior dos intervalos de confiança de 95% para os coeficientes b0 e b1. Para glm, ela usa a verossimilhança perfilada (profile likelihood), que costuma ser melhor que a regra dos 2 erros-padrão, mas também é uma aproximação para amostras grandes. Para obter os intervalos correspondentes de exp(b0) e exp(b1), basta aplicar exp à saída de confint(mdl). Faça isso agora."
+  CorrectAnswer: exp(confint(mdl))
+  AnswerTests: omnitest('exp(confint(mdl))')
+  Hint: "Digite \"exp(confint(mdl))\" no prompt do R."
+
+- Class: mult_question
+  Output: "Qual é o limite de confiança de 2.5% para a chance de vitória com 0 pontos?"
+  AnswerChoices: 0.005674966;0.996229662;2.5%
+  CorrectAnswer: 0.005674966
+  AnswerTests: omnitest(correctVal='0.005674966')
+  Hint: "É bem pequeno."
+
+- Class: mult_question
+  Output: "O limite inferior da chance de vitória com 0 pontos é quase zero, o que parece bem mais realista que os 16/84 do modelo de máxima verossimilhança. Agora olhe o limite inferior de exp(b1), o coeficiente exponenciado de ravenScore. O que ele indica sobre o efeito de cada ponto a mais na chance de vitória?"
+  AnswerChoices: Que ela pode diminuir um pouco;Que ela certamente aumenta um pouco;Que ela aumenta 30%
+  CorrectAnswer: Que ela pode diminuir um pouco
+  AnswerTests: omnitest(correctVal='Que ela pode diminuir um pouco')
+  Hint: "Se você multiplica um número positivo por 0.996229662, o valor aumenta ou diminui?"
+
+- Class: text
+  Output: "O limite inferior de exp(b1) fica um pouco abaixo de 1. Isso não quer dizer que os dados indiquem que a chance diminui a cada ponto - quer dizer que o intervalo inclui o 1 (nenhum efeito) e até um efeito levemente negativo, ou seja, os dados não bastam para descartar essas possibilidades. Com só 20 jogos, a estimativa é imprecisa, e as aproximações para amostras grandes nas quais os intervalos se baseiam ficam menos confiáveis. De fato, a versão da análise de variância para GLM vai mostrar que, se ignorarmos os pontos, o modelo não fica muito pior."
+
+- Class: cmd_question
+  Output: "A regressão linear minimiza a soma dos quadrados das diferenças entre as observações previstas e as reais, isto é, minimiza a variância dos resíduos. Se uma preditora adicional reduz significativamente a variância dos resíduos, ela é considerada importante. O deviance estende essa ideia para a regressão linear generalizada, usando o log da verossimilhança (multiplicado por -2) no lugar da variância. (Para uma explicação detalhada, veja os slides e as aulas.) Para ver a análise de deviance do nosso modelo, digite anova(mdl)."
+  CorrectAnswer: anova(mdl)
+  AnswerTests: omnitest('anova(mdl)')
+  Hint: "Digite \"anova(mdl)\" no prompt do R."
+
+- Class: cmd_question
+  Output: "O valor 3.5398, na linha de ravenScore, coluna Deviance, é na verdade a diferença entre o deviance do nosso modelo, que inclui uma inclinação, e o de um modelo só com o intercepto, b0. Para amostras grandes, esse valor segue uma distribuição qui-quadrado central com 1 grau de liberdade (2 parâmetros menos 1 parâmetro, ou, de forma equivalente, 19-18). A hipótese nula é que o coeficiente de ravenScore é zero. Para rejeitar essa hipótese com confiança, queremos que 3.5398 seja maior que o percentil 95 da distribuição qui-quadrado com um grau de liberdade. Use qchisq(0.95, 1) para calcular esse limiar."
+  CorrectAnswer: qchisq(0.95, 1)
+  AnswerTests: ANY_of_exprs('qchisq(0.95, 1)', 'qchisq(.95, 1)')
+  Hint: "Digite \"qchisq(0.95, 1)\" no prompt do R."
+
+- Class: cmd_question
+  Output: "Também podemos calcular o valor de p desse teste da razão de verossimilhança - a probabilidade de uma qui-quadrado com 1 grau de liberdade passar de 3.5398. (A partir do R 4.4.0, anova() para glm já mostra esse valor na coluna Pr(>Chi); em versões anteriores, é preciso usar anova(mdl, test=\"Chisq\").) Calcule-o com pchisq(3.5398, 1, lower.tail=FALSE)."
+  CorrectAnswer: pchisq(3.5398, 1, lower.tail=FALSE)
+  AnswerTests: ANY_of_exprs('pchisq(3.5398, 1, lower.tail=FALSE)', 'pchisq(3.5398, 1, lower.tail = FALSE)', '1-pchisq(3.5398, 1)', '1 - pchisq(3.5398, 1)')
+  Hint: "Digite \"pchisq(3.5398, 1, lower.tail=FALSE)\" no prompt do R."
+
+- Class: text
+  Output: "Como você pode ver, 3.5398 está perto, mas abaixo, do limiar do percentil 95, 3.841459, e o valor de p é de cerca de 0.06. Por isso, no nível convencional de 5%, não rejeitamos a hipótese nula. Em outras palavras, ravenScore acrescenta pouco a um modelo que simplesmente chuta que os Ravens vencem com probabilidade de 70% (o desempenho real deles naquela temporada), ou chance de 7 para 3. Um cuidado - não rejeitar a hipótese nula não mostra que os pontos não importam; com 20 jogos, o teste tem pouco poder. Se quiser, confira criando mdl0 <- glm(ravenWinNum ~ 1, binomial, ravenData) e comparando os modelos com anova(mdl0, mdl)."
+
+- Class: text
+  Output: "Parabéns! Você terminou esta lição sobre Respostas Binárias."
