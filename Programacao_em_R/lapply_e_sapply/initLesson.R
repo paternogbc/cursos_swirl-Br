@@ -1,6 +1,14 @@
+# Encontra a pasta onde o swirl instala os cursos
+# (respeita a opção swirl_courses_dir; compatível com o swirl 2.2.21)
+.get_course_path <- function(){
+  tryCatch(swirl:::swirl_courses_dir(),
+           error = function(c) {file.path(find.package("swirl"),"Courses")}
+  )
+}
+
 # Path to installed lesson
-.lessonpath <- file.path(path.package("swirl"), "Courses", 
-                         "R_Programming_Alt", "lapply_and_sapply")
+.lessonpath <- file.path(.get_course_path(),
+                         "Programacao_em_R", "lapply_e_sapply")
 # Path to dataset
 .datapath <- file.path(.lessonpath, "flag.data.txt")
 # Load dataset
