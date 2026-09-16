@@ -1,0 +1,201 @@
+- Class: meta
+  Course: Modelos de Regressão
+  Lesson: Resíduos, Diagnóstico e Variação
+  Author: Swirl Coders, Diogo B. Provete (Tradução)
+  Type: Standard
+  Organization: Johns Hopkins Bloomberg School of Public Health
+  Version: 2.2.0
+
+- Class: text
+  Output: "Resíduos, Diagnóstico e Variação. (Os slides desta e de outras disciplinas de Ciência de Dados, em inglês, estão no GitHub, em https://github.com/DataScienceSpecialization/courses. Se quiser usá-los, é preciso baixá-los como arquivo zip e abri-los no seu computador. Esta lição corresponde a Regression_Models/02_04_residuals_variation_diagnostics.)"
+
+- Class: figure
+  Output: "Na figura ao lado há um outlier bem evidente. Mesmo sendo evidente, ele não afeta muito o ajuste, como se vê comparando a linha laranja com a preta. A linha laranja representa o ajuste com o outlier incluído nos dados, e a linha preta, o ajuste sem ele. Incluir esse outlier não muda muito o ajuste; por isso, dizemos que ele não é influente."
+  Figure: noninfluential.R
+  FigureType: new
+
+- Class: figure
+  Output: "A próxima figura também tem um outlier bem evidente, mas neste caso incluí-lo muda muito o ajuste. A inclinação e os resíduos da linha laranja são muito diferentes dos da linha preta. Dizemos que esse outlier é influente."
+  Figure: influential.R
+  FigureType: new
+
+- Class: text
+  Output: "Outliers podem ou não pertencer aos dados. Podem representar eventos reais ou ser espúrios. De qualquer forma, precisam ser examinados. Para encontrá-los, o R oferece vários gráficos de diagnóstico e medidas de influência. Nesta lição vamos mostrar o que significam e como usá-los. A técnica básica é examinar o efeito de deixar uma observação de fora, como fizemos ao comparar as linhas preta e laranja acima. Vamos usar o outlier influente como exemplo, já que deixá-lo de fora tem efeitos claros."
+
+- Class: cmd_question
+  Output: "O outlier influente está num data frame chamado out2. Ele tem duas colunas, chamadas y e x, nessa ordem. Para começar, crie um modelo chamado fit usando fit <- lm(y ~ x, out2) ou uma expressão equivalente."
+  CorrectAnswer: fit <- lm(y ~ x, out2)
+  AnswerTests: creates_lm_model('fit <- lm(y ~ x, out2)')
+  Hint: "Digite \"fit <- lm(y ~ x, out2)\", ou algo equivalente, no prompt do R."
+
+- Class: cmd_question
+  Output: "O gráfico de diagnóstico mais simples mostra os resíduos contra os valores ajustados. Os resíduos não devem ter relação com o ajuste e devem ser independentes e (quase) identicamente distribuídos, com média zero. Digite plot(fit, which=1) no prompt do R para ver se é o caso."
+  CorrectAnswer: plot(fit, which=1)
+  AnswerTests: omnitest(correctExpr='plot(fit, which=1)')
+  Hint: "Digite \"plot(fit, which=1)\" no prompt do R."
+  Figure: restore_1.R
+  FigureType: new
+
+- Class: mult_question
+  Output: "Os resíduos parecem não ter relação com o ajuste?"
+  AnswerChoices: Sim, não há padrão;Não. Há um padrão linear entre o ajuste e todos os resíduos, exceto um.
+  CorrectAnswer: Não. Há um padrão linear entre o ajuste e todos os resíduos, exceto um.
+  AnswerTests: omnitest(correctVal='Não. Há um padrão linear entre o ajuste e todos os resíduos, exceto um.')
+  Hint: "Há uma relação linear evidente entre o ajuste e a maioria dos resíduos."
+
+- Class: text
+  Output: "Um detalhe importante - em mínimos quadrados com intercepto, a correlação entre os resíduos e os valores ajustados é sempre exatamente zero, por construção. Confira depois com cor(resid(fit), fitted(fit)). O que o gráfico revela é que o ponto 1 sozinho compensa os outros - sem ele, a correlação entre os 50 resíduos restantes e seus valores ajustados é de cerca de 0.66. Por isso olhamos o padrão no gráfico, e não só um número."
+
+- Class: mult_question
+  Output: "O gráfico Residuals vs Fitted identifica alguns pontos pelo nome ou número da linha - no nosso caso, números. Qual dos três pontos identificados você acha que é o nosso outlier influente?"
+  AnswerChoices: 1;13;50
+  CorrectAnswer: 1
+  AnswerTests: omnitest(correctVal='1')
+  Hint: "Ele se destaca bastante. Por exemplo, está bem longe dos outros."
+
+- Class: cmd_question
+  Output: "Nosso outlier influente está na linha 1 dos dados. Para excluí-lo, basta usar out2[-1, ] em vez de out2 como dados. Crie um segundo modelo, chamado fitno (de 'fit with no outlier', ajuste sem o outlier), que exclua o outlier."
+  CorrectAnswer: fitno <- lm(y ~ x, out2[-1, ])
+  AnswerTests: creates_lm_model('fitno <- lm(y ~ x, out2[-1,])')
+  Hint: "Digite \"fitno <- lm(y ~ x, out2[-1, ])\", ou algo equivalente, no prompt do R."
+
+- Class: cmd_question
+  Output: "Mostre o gráfico Residuals vs Fitted de fitno. Lembre de usar which=1."
+  CorrectAnswer: plot(fitno, which=1)
+  AnswerTests: omnitest(correctExpr='plot(fitno, which=1)')
+  Hint: "Digite \"plot(fitno, which=1)\" no prompt do R."
+  Figure: restore_2.R
+  FigureType: new
+
+- Class: text
+  Output: "Este gráfico não tem nada do padrão do primeiro. Ele tem a cara que esperaríamos se os resíduos fossem independentes e (quase) identicamente distribuídos, com média zero, e sem relação com o ajuste."
+
+- Class: cmd_question
+  Output: "A mudança que incluir ou excluir uma observação provoca nos coeficientes é uma medida simples da sua influência. Subtraia coef(fitno) de coef(fit) para ver a mudança causada pela inclusão da primeira observação, a influente."
+  CorrectAnswer: coef(fit)-coef(fitno)
+  AnswerTests: ANY_of_exprs('coef(fit)-coef(fitno)', 'fit$coef-fitno$coef', 'fit$coefficients-fitno$coefficients')
+  Hint: "Digite \"coef(fit)-coef(fitno)\" no prompt do R."
+
+- Class: cmd_question
+  Output: "dfbeta - A função dfbeta faz o cálculo equivalente para cada observação dos dados. A primeira linha de dfbeta(fit) deve bater com a diferença que acabamos de calcular. A segunda linha é o mesmo cálculo para a segunda observação, e assim por diante. Como dfbeta devolve uma matriz grande, use head(dfbeta(fit)) ou View(dfbeta(fit)) para examinar o resultado."
+  CorrectAnswer: head(dfbeta(fit))
+  AnswerTests: ANY_of_exprs('head(dfbeta(fit))', 'View(dfbeta(fit))')
+  Hint: "Digite \"head(dfbeta(fit))\" ou \"View(dfbeta(fit))\" no prompt do R."
+
+- Class: text
+  Output: "Comparando a primeira linha com as de baixo, vemos que a primeira observação tem um efeito muito maior sobre a inclinação (a coluna x) do que as outras. O efeito dela é mais de 10 vezes maior que o de qualquer outro ponto, e cerca de 190 vezes maior que o de um ponto típico (a mediana dos demais). Já o efeito sobre o intercepto não se destaca, basicamente porque a coordenada y do outlier é 0, praticamente a média das outras observações."
+
+- Class: figure
+  Output: "Quando uma observação entra no modelo, ela puxa a linha de regressão para perto de si (linha laranja), mais do que no modelo que a exclui (linha preta). O resíduo dela, a diferença entre o valor real de y e o da linha de regressão, é portanto menor em módulo quando ela é incluída (pontos laranja) do que quando é omitida (pontos pretos). A razão entre esses dois resíduos, laranja sobre preto, fica pequena em módulo para uma observação que puxa muito a linha. Para uma observação que não puxa a linha, a razão fica perto de 1. Assim, 1 menos a razão é uma medida desse poder de puxar a linha - perto de 0 para pontos que não puxam, e perto de 1 para pontos que puxam."
+  Figure: hatvalues.R
+  FigureType: new
+
+- Class: cmd_question
+  Output: "Essa medida é chamada de alavancagem (leverage) ou valor-chapéu (hat value); alguns textos também a chamam de influência. Como ela é 1 menos a razão entre dois resíduos, para calculá-la do zero precisamos primeiro obter os dois resíduos. O numerador da razão (pontos laranja) é o resíduo da primeira observação no modelo que chamamos de fit. O modelo fitno, que exclui essa observação, também exclui o resíduo dela, então vamos ter de calculá-lo. É fácil. Usamos a função predict do R para calcular o valor de y previsto por fitno e o subtraímos do valor real. Use a expressão resno <- out2[1, \"y\"] - predict(fitno, out2[1,]) para fazer o cálculo."
+  CorrectAnswer: resno <- out2[1, "y"] - predict(fitno, out2[1,])
+  AnswerTests: ANY_of_exprs('resno <- out2[1, "y"] - predict(fitno, out2[1,])', "resno <- out2[1, 'y'] - predict(fitno, out2[1,])")
+  Hint: "Digite a expressão resno <- out2[1, \"y\"] - predict(fitno, out2[1,]) no prompt do R."
+
+- Class: cmd_question
+  Output: "Agora calcule a alavancagem do nosso outlier usando 1-resid(fit)[1]/resno ou uma expressão equivalente."
+  CorrectAnswer: 1-resid(fit)[1]/resno
+  AnswerTests: calculates_same_value('1-resid(fit)[1]/resno')
+  Hint: "Digite \"1-resid(fit)[1]/resno\", ou uma expressão equivalente, no prompt do R."
+
+- Class: cmd_question
+  Output: "hatvalues - A função hatvalues faz, para cada observação, um cálculo equivalente ao que você acabou de fazer. Assim, o primeiro valor de hatvalues(fit) deve bater com o que você calculou. Como são muitas observações, use head(hatvalues(fit)) ou View(hatvalues(fit)) para comparar a alavancagem do nosso outlier com a de outras observações."
+  CorrectAnswer: head(hatvalues(fit))
+  AnswerTests: ANY_of_exprs("head(hatvalues(fit))", "View(hatvalues(fit))")
+  Hint: "Digite \"head(hatvalues(fit))\" ou \"View(hatvalues(fit))\" no prompt do R."
+
+- Class: text
+  Output: "Cuidado com os nomes - o valor-chapéu depende só dos valores de x, e não de y. Ele mede a alavancagem, ou seja, o potencial de um ponto para influenciar o ajuste. Um ponto com x = 5 que caísse exatamente sobre a reta dos outros teria o mesmo valor-chapéu alto (cerca de 0.63) e nenhuma influência sobre a reta. Já o outlier da primeira figura, em x = 0, tem valor-chapéu baixo (cerca de 0.02) e quase não mexe na reta. A influência de fato aparece quando alta alavancagem se junta a um resíduo grande, e é isso que a distância de Cook, no fim desta lição, vai medir."
+
+- Class: text
+  Output: "Às vezes os resíduos de cada observação são tratados como se tivessem a mesma variância, estimada pela variância amostral do conjunto de resíduos. Em teoria, porém, os resíduos de cada observação têm variâncias diferentes, e essas diferenças podem ficar grandes na presença de outliers. Os resíduos padronizados e os studentizados tentam compensar esse efeito, de duas maneiras um pouco diferentes. Os dois usam os valores-chapéu."
+
+- Class: cmd_question
+  Output: "Vamos começar pelos resíduos padronizados. Primeiro, calcule o desvio-padrão amostral dos resíduos de fit, dividindo o deviance de fit, isto é, a soma dos quadrados dos resíduos, pelos graus de liberdade do resíduo e tirando a raiz quadrada. Guarde o resultado numa variável chamada sigma."
+  CorrectAnswer: sigma <- sqrt(deviance(fit)/df.residual(fit))
+  AnswerTests: calculates_same_value('sigma <- sqrt(deviance(fit)/df.residual(fit))');expr_creates_var('sigma')
+  Hint: "Digite \"sigma <- sqrt(deviance(fit)/df.residual(fit))\", ou uma expressão equivalente, no prompt do R."
+
+- Class: cmd_question
+  Output: "Normalmente, dividiríamos o resíduo de fit (que tem média 0) por sigma. Aqui, multiplicamos sigma por sqrt(1-hatvalues(fit)) para estimar o desvio-padrão de cada observação. Assim, em vez de dividir resid(fit) por sigma, dividimos por sigma*sqrt(1-hatvalues(fit)). O resultado se chama resíduo padronizado. Calcule o resíduo padronizado de fit e guarde-o numa variável chamada rstd."
+  CorrectAnswer: rstd <- resid(fit)/(sigma * sqrt(1-hatvalues(fit)))
+  AnswerTests: calculates_same_value('rstd <- resid(fit)/(sigma * sqrt(1-hatvalues(fit)))');expr_creates_var('rstd')
+  Hint: "Digite \"rstd <- resid(fit)/(sigma * sqrt(1-hatvalues(fit)))\", ou uma expressão equivalente, no prompt do R."
+
+- Class: cmd_question
+  Output: "rstandard - A função rstandard calcula o resíduo padronizado que acabamos de calcular passo a passo. Use head(cbind(rstd, rstandard(fit))) ou View(cbind(rstd, rstandard(fit))) para comparar os dois cálculos."
+  CorrectAnswer: head(cbind(rstd, rstandard(fit)))
+  AnswerTests: ANY_of_exprs('head(cbind(rstd, rstandard(fit)))', 'View(cbind(rstd, rstandard(fit)))')
+  Hint: "Digite \"head(cbind(rstd, rstandard(fit)))\" ou \"View(cbind(rstd, rstandard(fit)))\" no prompt do R."
+
+- Class: cmd_question
+  Output: "O gráfico Scale-Location mostra a raiz quadrada do valor absoluto dos resíduos padronizados contra os valores ajustados. Use plot(fit, which=3) para vê-lo."
+  CorrectAnswer: plot(fit, which=3)
+  AnswerTests: omnitest(correctExpr='plot(fit, which=3)')
+  Hint: "Digite \"plot(fit, which=3)\" no prompt do R."
+  Figure: restore_3.R
+  FigureType: new
+
+- Class: cmd_question
+  Output: "A maioria das estatísticas de diagnóstico que estamos vendo foi criada por causa de limitações percebidas em outros diagnósticos e porque era possível caracterizar sua distribuição sob uma hipótese nula. Essas caracterizações supõem, implicitamente, que os resíduos são aproximadamente normais. Como os resíduos padronizados corrigem as diferenças de variância entre os resíduos, interessa ver um gráfico QQ dos resíduos padronizados contra uma normal com variância constante. Use plot(fit, which=2) para ver esse gráfico de diagnóstico."
+  CorrectAnswer: plot(fit, which=2)
+  AnswerTests: omnitest(correctExpr='plot(fit, which=2)')
+  Hint: "Digite \"plot(fit, which=2)\" no prompt do R."
+  Figure: restore_4.R
+  FigureType: new
+
+- Class: mult_question
+  Output: "Olhe o resíduo padronizado do outlier, identificado como 1 no gráfico Normal Q-Q. A quantos desvios-padrão da média ele está, aproximadamente?"
+  AnswerChoices: Cerca de -5;Cerca de -2
+  CorrectAnswer: Cerca de -5
+  AnswerTests: omnitest(correctVal='Cerca de -5')
+  Hint: "Essa seria a posição dele no eixo vertical."
+
+- Class: cmd_question
+  Output: "Os resíduos studentizados (às vezes chamados de resíduos studentizados externamente) estimam o desvio-padrão de cada resíduo usando, além do valor-chapéu de cada observação, o deviance de um modelo que deixa essa observação de fora. Vamos mostrar com o outlier. Lembrando que o modelo fitno omite o outlier, calcule o desvio-padrão amostral dos resíduos de fitno, dividindo o deviance dele pelos graus de liberdade do resíduo e tirando a raiz quadrada. Guarde o resultado numa variável chamada sigma1."
+  CorrectAnswer: sigma1 <- sqrt(deviance(fitno)/df.residual(fitno))
+  AnswerTests: calculates_same_value('sigma1 <- sqrt(deviance(fitno)/df.residual(fitno))');expr_creates_var('sigma1')
+  Hint: "Digite \"sigma1 <- sqrt(deviance(fitno)/df.residual(fitno))\", ou uma expressão equivalente, no prompt do R."
+
+- Class: cmd_question
+  Output: "Calcule o resíduo studentizado do outlier dividindo resid(fit)[1] pelo produto de sigma1 e sqrt(1-hatvalues(fit)[1]). Não precisa guardar o resultado numa variável."
+  CorrectAnswer: resid(fit)[1]/(sigma1*sqrt(1-hatvalues(fit)[1]))
+  AnswerTests: calculates_same_value('resid(fit)[1]/(sigma1*sqrt(1-hatvalues(fit)[1]))')
+  Hint: "Digite \"resid(fit)[1]/(sigma1*sqrt(1-hatvalues(fit)[1]))\", ou uma expressão equivalente, no prompt do R."
+
+- Class: cmd_question
+  Output: "rstudent - A função rstudent calcula os resíduos studentizados de cada observação com um procedimento equivalente ao que acabamos de usar para o outlier. Assim, rstudent(fit)[1] deve bater com o valor calculado na questão anterior. Use head(rstudent(fit)) ou View(rstudent(fit)) para conferir e para comparar o resíduo studentizado do outlier com o das outras observações."
+  CorrectAnswer: head(rstudent(fit))
+  AnswerTests: ANY_of_exprs('head(rstudent(fit))', 'View(rstudent(fit))', 'rstudent(fit)')
+  Hint: "Digite \"head(rstudent(fit))\", ou uma expressão equivalente, no prompt do R."
+
+- Class: text
+  Output: "A distância de Cook é a última medida de influência que vamos ver. Ela é, basicamente, a soma dos quadrados das diferenças entre os valores ajustados com e sem uma determinada observação. Essa soma é normalizada (dividida) pela variância amostral dos resíduos vezes o número de coeficientes do modelo, que no nosso caso é 2 (o intercepto e x). Ela diz, em essência, quanto uma observação muda o modelo. Vamos mostrar de novo calculando a distância de Cook do outlier."
+
+- Class: cmd_question
+  Output: "Começamos calculando a diferença entre os valores previstos por fit e por fitno, os modelos que incluem e omitem o outlier, respectivamente. O jeito mais fácil é subtrair predict(fit, out2) de predict(fitno, out2). Guarde a diferença numa variável chamada dy."
+  CorrectAnswer: dy <- predict(fitno, out2)-predict(fit, out2)
+  AnswerTests: calculates_ANY_value('dy <- predict(fitno, out2)-predict(fit, out2)', 'dy <- predict(fit, out2)-predict(fitno, out2)');expr_creates_var('dy')
+  Hint: "Digite \"dy <- predict(fitno, out2)-predict(fit, out2)\", ou uma expressão equivalente, no prompt do R."
+
+- Class: cmd_question
+  Output: "Lembre que já calculamos sigma, o desvio-padrão amostral dos resíduos de fit. Divida a soma dos quadrados de dy por 2*sigma^2 para calcular a distância de Cook do outlier. Não precisa guardar o resultado numa variável."
+  CorrectAnswer: sum(dy^2)/(2*sigma^2)
+  AnswerTests: calculates_same_value('sum(dy^2)/(2*sigma^2)')
+  Hint: "Digite \"sum(dy^2)/(2*sigma^2)\", ou uma expressão equivalente, no prompt do R."
+
+- Class: cmd_question
+  Output: "cooks.distance - A função cooks.distance calcula a distância de Cook de cada observação. Em vez de conferir se cooks.distance(fit)[1] é igual ao valor que acabamos de calcular, porque esse tipo de coisa já deve estar ficando cansativo, mostre um gráfico de diagnóstico que usa a distância de Cook, com plot(fit, which=5)."
+  CorrectAnswer: plot(fit, which=5)
+  AnswerTests: omnitest(correctExpr='plot(fit, which=5)')
+  Hint: "Digite \"plot(fit, which=5)\" no prompt do R."
+
+- Class: text
+  Output: "Esse gráfico (Residuals vs Leverage) junta as duas coisas - a alavancagem no eixo horizontal e o resíduo padronizado no vertical. As linhas tracejadas marcam valores de referência da distância de Cook (0.5 e 1). O outlier, com distância de Cook de cerca de 23, fica muito além delas; o segundo ponto mais influente, o 50, tem cerca de 0.21."
+
+- Class: text
+  Output: "Parabéns! Você terminou esta lição sobre Resíduos, Diagnóstico e Variação."
