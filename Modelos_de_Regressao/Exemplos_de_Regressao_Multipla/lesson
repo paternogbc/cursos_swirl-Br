@@ -1,0 +1,131 @@
+- Class: meta
+  Course: Modelos de Regressão
+  Lesson: Exemplos de Regressão Múltipla
+  Author: Swirl Coders, Diogo B. Provete (Tradução)
+  Type: Standard
+  Organization: Johns Hopkins Bloomberg School of Public Health
+  Version: 2.2.0
+
+- Class: text
+  Output: "Exemplos de Regressão Múltipla. (Os slides desta e de outras disciplinas de Ciência de Dados, em inglês, estão no GitHub, em https://github.com/DataScienceSpecialization/courses. Se quiser usá-los, é preciso baixá-los como arquivo zip e abri-los no seu computador. Esta lição corresponde a Regression_Models/02_02_multivariateExamples.)"
+
+- Class: text
+  Output: Nesta lição, vamos ver alguns exemplos de modelos de regressão com mais de uma variável. Começamos com os dados swiss, que tomamos a liberdade de carregar para você. Eles fazem parte do pacote datasets do R. Foram coletados em 1888, época de mudança demográfica na Suíça, e medem seis variáveis em 47 províncias francófonas do país. Usamos o código dos slides (a função pairs do R) para mostrar aqui uma matriz 6 por 6 de gráficos de dispersão com as relações entre cada par de variáveis. Todas as variáveis, exceto a fecundidade (Fertility), são proporções da população. Por exemplo, "Examination" é a porcentagem de recrutas do exército que tiraram a nota mais alta no exame de alistamento, e "Education" é a porcentagem de recrutas com escolaridade além do ensino primário.
+
+- Class: mult_question
+  Output: Pelo gráfico, qual destes NÃO é um dos fatores medidos?
+  AnswerChoices: Obesidade;Catholic;Fertility;Infant Mortality
+  CorrectAnswer: Obesidade
+  AnswerTests: omnitest(correctVal='Obesidade')
+  Hint: Qual das opções não aparece de jeito nenhum no gráfico?
+
+- Class: cmd_question
+  Output: Primeiro, use a função lm do R para gerar o modelo linear "all", em que Fertility é a variável dependente de todas as outras. Use o atalho "." do R para representar as cinco variáveis independentes na fórmula passada a lm. Lembre que os dados se chamam "swiss".
+  CorrectAnswer: all <- lm(Fertility ~ ., swiss)
+  AnswerTests: creates_lm_model('all <- lm(Fertility ~ . , swiss)')
+  Hint: Digite "all <- lm(Fertility ~ ., swiss)" no prompt do R.
+
+- Class: cmd_question
+  Output: Agora veja o resumo do modelo linear all.
+  CorrectAnswer: summary(all)
+  AnswerTests: omnitest(correctExpr='summary(all)')
+  Hint: Digite "summary(all)" no prompt do R.
+
+- Class: text
+  Output: Lembre que as estimativas (Estimate) são os coeficientes das variáveis independentes do modelo linear (todas elas porcentagens) e refletem a mudança estimada na variável dependente (fecundidade) quando a variável independente correspondente muda. Assim, a cada aumento de 1 ponto percentual na porcentagem de homens que trabalham na agricultura, esperamos uma diminuição de .17 na fecundidade, mantendo todas as outras variáveis constantes; a cada aumento de 1 ponto percentual na proporção de católicos, esperamos um aumento de .10 na fecundidade, mantendo todas as outras variáveis constantes.
+
+- Class: mult_question
+  Output: O "*" no fim da linha indica que a influência de Agriculture sobre Fertility é significativa. Em que nível alfa o teste t de Agriculture é significativo?
+  AnswerChoices: 0.05;0.01;0.1;O R não informa
+  CorrectAnswer: 0.05
+  AnswerTests: omnitest(correctVal='0.05')
+  Hint: Olhe a linha "Signif. codes" na saída do summary.
+
+- Class: cmd_question
+  Output: Agora gere o resumo de outro modelo linear (sem guardá-lo numa nova variável), em que Fertility depende só de Agriculture.
+  CorrectAnswer: summary(lm(Fertility ~ Agriculture, swiss))
+  AnswerTests: omnitest(correctExpr='summary(lm(Fertility ~ Agriculture, swiss))')
+  Hint: Digite "summary(lm(Fertility ~ Agriculture, swiss))" no prompt do R.
+
+- Class: mult_question
+  Output: Qual é o coeficiente de Agriculture nesse novo modelo?
+  AnswerChoices: 0.19420;60.30438;0.07671;*
+  CorrectAnswer: 0.19420
+  AnswerTests: omnitest(correctVal='0.19420')
+  Hint: Olhe a coluna "Estimate" e a linha "Agriculture" do resumo que você acabou de gerar.
+
+- Class: text
+  Output: O ponto interessante é que o sinal do coeficiente de Agriculture mudou de negativo (quando todas as variáveis estavam no modelo) para positivo (quando o modelo considerava só Agriculture). Claramente, a presença dos outros fatores afeta a influência de Agriculture sobre Fertility.
+
+- Class: mult_question
+  Output: Vamos pensar na relação entre alguns dos fatores. Como você espera que o nível de escolaridade (Education) e o desempenho no exame (Examination) se relacionem?
+  AnswerChoices: Seriam correlacionados;Não seriam correlacionados;Eu não conseguiria adivinhar sem mais informação
+  CorrectAnswer: Seriam correlacionados
+  AnswerTests: omnitest(correctVal='Seriam correlacionados')
+  Hint: Como você se sairia numa prova sem ter tido aula, preparação ou lição do swirl?
+
+- Class: cmd_question
+  Output: Agora confira sua intuição com o comando "cor" do R. Ele calcula a correlação entre Examination e Education.
+  CorrectAnswer: cor(swiss$Examination,swiss$Education)
+  AnswerTests: ANY_of_exprs('cor(swiss$Examination,swiss$Education)','cor(swiss$Education,swiss$Examination)')
+  Hint: Digite "cor(swiss$Examination,swiss$Education)" no prompt do R.
+
+- Class: cmd_question
+  Output: A correlação de .6984 mostra que as duas são correlacionadas. Agora calcule a correlação entre Agriculture e Education.
+  CorrectAnswer: cor(swiss$Agriculture,swiss$Education)
+  AnswerTests: ANY_of_exprs('cor(swiss$Agriculture,swiss$Education)','cor(swiss$Education,swiss$Agriculture)')
+  Hint: Digite "cor(swiss$Agriculture,swiss$Education)" no prompt do R.
+
+- Class: text
+  Output: A correlação negativa (-.6395) entre Agriculture e Education pode estar afetando a influência de Agriculture sobre Fertility. Carreguei e executei o arquivo swissLMs.R no seu diretório de trabalho. Nele há uma função, makelms(), que gera uma sequência de cinco modelos lineares. Cada modelo tem uma variável independente a mais que o anterior; assim, o primeiro tem só uma, Agriculture, e o último tem as cinco. Tentei abrir o código no seu editor. Se não consegui, abra o arquivo manualmente para poder ler o código.
+
+- Class: cmd_question
+  Output: Agora rode a função makelms() para ver como o acréscimo de variáveis afeta o coeficiente de Agriculture nos modelos.
+  CorrectAnswer: makelms()
+  AnswerTests: omnitest(correctExpr='makelms()')
+  Hint: Digite "makelms()" no prompt do R.
+
+- Class: mult_question
+  Output: O acréscimo de qual variável muda o sinal do coeficiente de Agriculture de positivo para negativo?
+  AnswerChoices: Education;Catholic;Examination;Infant.Mortality
+  CorrectAnswer: Education
+  AnswerTests: omnitest(correctVal='Education')
+  Hint: O sinal muda no terceiro modelo. No código em R, qual variável independente aparece na terceira chamada mas não na segunda?
+
+- Class: cmd_question
+  Output: Agora vamos mostrar o que acontece quando acrescentamos a um modelo uma variável que não traz nenhuma informação linear nova. Crie uma variável ec que seja a soma de swiss$Examination e swiss$Catholic.
+  CorrectAnswer: ec <- swiss$Examination+swiss$Catholic
+  AnswerTests: ANY_of_exprs('ec <- swiss$Examination+swiss$Catholic','ec <- swiss$Catholic+swiss$Examination')
+  Hint: Digite "ec <- swiss$Examination+swiss$Catholic" no prompt do R.
+
+- Class: cmd_question
+  Output: Agora gere um novo modelo, efit, com Fertility como variável dependente e, como variáveis independentes, as outras 5 variáveis originais E ec. Use o atalho ". + ec" do R no lado direito da fórmula.
+  CorrectAnswer: efit <- lm(Fertility ~ . + ec, swiss)
+  AnswerTests: creates_lm_model('efit <- lm(Fertility ~ . + ec, swiss)')
+  Hint: Digite "efit <- lm(Fertility ~ . + ec, swiss)" no prompt do R.
+
+- Class: text
+  Output: Vamos ver que o R ignora esse novo termo, porque ele não acrescenta nenhuma informação ao modelo.
+
+- Class: cmd_question
+  Output: Subtraia os coeficientes de efit dos coeficientes do primeiro modelo que você criou, all. (O R vai emitir um aviso, porque efit tem um coeficiente a mais que all; pode ignorá-lo.)
+  CorrectAnswer: all$coefficients - efit$coefficients
+  AnswerTests: omnitest(correctExpr='all$coefficients - efit$coefficients')
+  Hint: Digite "all$coefficients-efit$coefficients" no prompt do R.
+
+- Class: mult_question
+  Output: Qual é o coeficiente de ec?
+  AnswerChoices: NA;0;Não faço a menor ideia.
+  CorrectAnswer: NA
+  AnswerTests: omnitest(correctVal='NA')
+  Hint: Como ec é uma combinação linear de duas outras variáveis, o R a ignora, e o coeficiente dela fica indisponível (NA, de Not Available).
+
+- Class: mult_question
+  Output: Isso nos mostra que
+  AnswerChoices: Acrescentar ec não muda o modelo;Acrescentar ec zera os coeficientes;O R é muito legal
+  CorrectAnswer: Acrescentar ec não muda o modelo
+  AnswerTests: omnitest(correctVal='Acrescentar ec não muda o modelo')
+  Hint: Como ec é uma combinação linear de duas outras variáveis, ela não muda o modelo.
+
+- Class: text
+  Output: Parabéns! Você concluiu esta primeira lição sobre modelos lineares com várias variáveis.
