@@ -1,6 +1,14 @@
+# Encontra a pasta onde o swirl instala os cursos
+# (respeita a opção swirl_courses_dir; compatível com o swirl 2.2.21)
+.get_course_path <- function(){
+  tryCatch(swirl:::swirl_courses_dir(),
+           error = function(c) {file.path(find.package("swirl"),"Courses")}
+  )
+}
+
 # Path to data
-.datapath <- file.path(path.package('swirl'), 'Courses',
-                      'R_Programming_Alt', 'Looking_at_Data',
+.datapath <- file.path(.get_course_path(),
+                      'Programacao_em_R', 'Olhando_os_Dados',
                       'plant-data.txt')
 # Read in data
 plants <- read.csv(.datapath, strip.white=TRUE, na.strings="")
