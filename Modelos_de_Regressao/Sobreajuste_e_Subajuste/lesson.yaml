@@ -1,0 +1,165 @@
+- Class: meta
+  Course: Modelos de Regressão
+  Lesson: Sobreajuste e Subajuste
+  Author: Swirl Coders, Diogo B. Provete (Tradução)
+  Type: Standard
+  Organization: Johns Hopkins Bloomberg School of Public Health
+  Version: 2.2.0
+
+- Class: text
+  Output: "Sobreajuste e Subajuste (overfitting e underfitting). (Os slides desta e de outras disciplinas de Ciência de Dados, em inglês, estão no GitHub, em https://github.com/DataScienceSpecialization/courses. Se quiser usá-los, é preciso baixá-los como arquivo zip e abri-los no seu computador. Esta lição corresponde a Regression_Models/02_05_multipleVariables.)"
+
+- Class: text
+  Output: "A lição sobre Fatores de Inflação da Variância mostrou que incluir variáveis novas aumenta os erros-padrão das estimativas dos coeficientes das outras preditoras correlacionadas com elas. Por isso, não queremos jogar variáveis no modelo à toa. Por outro lado, omitir variáveis causa viés nos coeficientes das preditoras correlacionadas com as omitidas. Nesta lição, vamos mostrar o efeito de omitir variáveis e discutir o uso da ANOVA para construir representações dos dados parcimoniosas e interpretáveis."
+
+- Class: text
+  Output: "Primeiro, quero mostrar como omitir uma preditora correlacionada pode enviesar a estimativa de um coeficiente. O código está num arquivo chamado fitting.R, que copiei para o seu diretório de trabalho e tentei abrir no seu editor. Se não consegui, abra o arquivo manualmente."
+
+- Class: mult_question
+  Output: "Encontre a função simbias(), no início de fitting.R. Logo abaixo do comentário Ponto A, são definidas três preditoras, x1, x2 e x3. Quais duas são correlacionadas?"
+  AnswerChoices: x1 e x2;x1 e x3;x2 e x3
+  CorrectAnswer: x1 e x2
+  AnswerTests: omnitest(correctVal='x1 e x2')
+  Hint: "A variável temp entra na construção de x1 e de x2."
+
+- Class: mult_question
+  Output: "Dentro de simbias() é definida outra função, f(k). Ela cria uma variável dependente, y, e no Ponto C devolve o coeficiente de x1 estimado por dois modelos, y ~ x1 + x2 e y ~ x1 + x3. Cada modelo deixa uma preditora de fora. Na expressão de y (Ponto B), qual é o verdadeiro coeficiente de x1?"
+  AnswerChoices: 1;0.3;1/sqrt(2)
+  CorrectAnswer: 1
+  AnswerTests: omnitest(correctVal='1')
+  Hint: "Qual é o coeficiente de x1 na soma x1 + x2 + x3?"
+
+- Class: cmd_question
+  Output: "No Ponto D de simbias(), a função interna f() é aplicada 150 vezes, e os resultados são devolvidos numa matriz 2 x 150. A primeira linha dessa matriz traz estimativas independentes do coeficiente de x1 quando x3, a preditora não correlacionada com x1, é omitida. A segunda linha traz as estimativas do coeficiente de x1 quando a preditora correlacionada, x2, é omitida. Use simbias(), com o argumento padrão, para gerar essas estimativas e guarde o resultado numa variável chamada x1c. (O argumento padrão só garante um histograma bonito, numa figura mais adiante.)"
+  CorrectAnswer: x1c <- simbias()
+  AnswerTests: omnitest(correctExpr='x1c <- simbias()')
+  Hint: "Digite \"x1c <- simbias()\" no prompt do R."
+
+- Class: cmd_question
+  Output: "O verdadeiro coeficiente de x1 é 1. Já que omitir uma preditora correlacionada enviesaria as estimativas do coeficiente de x1, esperamos que a média da segunda linha de x1c fique mais longe de 1 do que a média da primeira linha. Usando apply(x1c, 1, mean), calcule a média de cada linha."
+  CorrectAnswer: apply(x1c, 1, mean)
+  AnswerTests: omnitest(correctExpr='apply(x1c, 1, mean)')
+  Hint: "Digite \"apply(x1c, 1, mean)\" no prompt do R."
+
+- Class: figure
+  Output: "A figura mostra os histogramas das estimativas da primeira linha de x1c (azul) e da segunda (vermelho). As estimativas da segunda linha estão muito além de dois desvios-padrão do valor correto, 1, e o viés causado pela omissão da preditora correlacionada fica evidente. (O código que produziu esta figura não é o foco da lição, mas está disponível na função x1hist(), no fim de fitting.R.)"
+  Figure: histograms.R
+  FigureType: new
+
+- Class: text
+  Output: "De onde vem o valor de cerca de 1.48? Quando omitimos x2, o coeficiente de x1 absorve parte do efeito de x2 - o coeficiente esperado é 1 mais o coeficiente de x1 na regressão de x2 contra x1 e x3. Como a correlação entre x1 e x2 é de cerca de 0.5, o resultado fica perto de 1.5. A média da primeira linha, cerca de 1.03, também não é exatamente 1, porque x1, x2 e x3 são sorteadas uma única vez, e nessa amostra x3 não é perfeitamente não correlacionada com x1 e x2. Esse viés some em média se as preditoras forem sorteadas de novo a cada simulação; o viés por omitir x2, não."
+
+- Class: figure
+  Output: "Acrescentar até mesmo preditoras irrelevantes pode levar um modelo a um ajuste perfeito. Vamos mostrar isso acrescentando preditoras aleatórias aos dados swiss e fazendo regressões com cada vez mais delas. À medida que o número de coeficientes se aproxima do número de observações (47), a soma dos quadrados dos resíduos, também chamada de deviance, se aproxima de 0 - e chega a 0 quando os dois ficam iguais. (O código desta figura está na função bogus(), em fitting.R.)"
+  Figure: bogus.R
+  FigureType: new
+
+- Class: text
+  Output: "Na figura, acrescentar preditoras aleatórias diminuiu o deviance, mas seria um erro achar que essas reduções são significativas. Para avaliar a significância, precisamos levar em conta que cada preditora acrescentada reduz os graus de liberdade dos resíduos. A análise de variância (ANOVA) é um jeito útil de quantificar a significância de preditoras adicionais. Para exemplificar, vamos usar os dados swiss."
+
+- Class: cmd_question
+  Output: "Lembre que os dados swiss trazem uma medida padronizada de fecundidade e indicadores socioeconômicos para cada uma das 47 províncias francófonas da Suíça em 1888. Pensava-se que a fecundidade (Fertility) dependia de um intercepto e de cinco fatores, chamados Agriculture, Examination, Education, Catholic e Infant.Mortality. Para começar nosso exemplo de ANOVA, faça a regressão de Fertility contra Agriculture e guarde o resultado numa variável chamada fit1."
+  CorrectAnswer: fit1 <- lm(Fertility ~ Agriculture, swiss)
+  AnswerTests: creates_lm_model('fit1 <- lm(Fertility ~ Agriculture, swiss)')
+  Hint: "Digite \"fit1 <- lm(Fertility ~ Agriculture, swiss)\", ou algo equivalente, no prompt do R."
+
+- Class: cmd_question
+  Output: "Crie outro modelo, chamado fit3, com a regressão de Fertility contra Agriculture e mais duas preditoras, Examination e Education."
+  CorrectAnswer: fit3 <- lm(Fertility ~ Agriculture + Examination + Education, swiss)
+  AnswerTests: creates_lm_model('fit3 <- lm(Fertility ~ Agriculture + Examination + Education, swiss)')
+  Hint: "Digite \"fit3 <- lm(Fertility ~ Agriculture + Examination + Education, swiss)\", ou algo equivalente, no prompt do R."
+
+- Class: cmd_question
+  Output: "Agora vamos usar anova para avaliar a significância das duas preditoras acrescentadas. A hipótese nula é que os coeficientes das duas preditoras acrescentadas são ambos zero. Vamos explicar em detalhe daqui a pouco; por enquanto, só aplique o teste digitando anova(fit1, fit3)."
+  CorrectAnswer: anova(fit1, fit3)
+  AnswerTests: omnitest(correctExpr='anova(fit1, fit3)')
+  Hint: "Digite \"anova(fit1, fit3)\" no prompt do R."
+
+- Class: mult_question
+  Output: "Os três asteriscos, ***, no canto inferior direito da tabela indicam que a hipótese nula foi rejeitada no nível de 0.001; portanto, pelo menos uma das duas preditoras acrescentadas tem coeficiente diferente de zero. A rejeição se baseia num teste F unicaudal à direita, Pr(>F), aplicado a um valor F. Segundo a tabela, qual é esse valor F?"
+  AnswerChoices: 20.968;3102.2;45
+  CorrectAnswer: 20.968
+  AnswerTests: omnitest(correctVal='20.968')
+  Hint: "É o único número na coluna F da tabela."
+
+- Class: mult_question
+  Output: "Uma estatística F é a razão entre duas somas de quadrados, cada uma dividida pelos seus graus de liberdade. Se os resíduos forem independentes e normais, com variância constante, cada soma dividida pela variância do erro segue uma distribuição qui-quadrado. Sob a hipótese nula, as duas somas são independentes, e a razão segue uma distribuição F com os dois graus de liberdade como parâmetros. Aqui, as duas somas são a redução na soma dos quadrados dos resíduos quando passamos de fit1 para fit3 (coluna Sum of Sq) e a soma dos quadrados dos resíduos do modelo maior, fit3 (coluna RSS, segunda linha). Quais são elas?"
+  AnswerChoices: 3102.2 e 3180.9;6283.1 e 3180.9;45 e 43
+  CorrectAnswer: 3102.2 e 3180.9
+  AnswerTests: omnitest(correctVal='3102.2 e 3180.9')
+  Hint: "Uma está na coluna Sum of Sq e a outra na coluna RSS, ambas na segunda linha da tabela de anova(fit1, fit3). Repare que 3102.2 = 6283.1 - 3180.9."
+
+- Class: cmd_question
+  Output: "A função deviance(model) do R calcula a soma dos quadrados dos resíduos, também chamada de deviance, do modelo linear dado como argumento. Usando deviance(fit3), confirme que 3180.9 é a soma dos quadrados dos resíduos de fit3. (Na tabela, fit3 aparece como Model 2.)"
+  CorrectAnswer: deviance(fit3)
+  AnswerTests: omnitest(correctExpr='deviance(fit3)')
+  Hint: "Digite \"deviance(fit3)\" no prompt do R."
+
+- Class: cmd_question
+  Output: "Nos próximos passos, vamos mostrar como calcular o valor F, 20.968, que aparece na tabela de anova(). Começamos pelo denominador, que é a soma dos quadrados dos resíduos de fit3 dividida pelos seus graus de liberdade. fit3 tem 43 graus de liberdade nos resíduos. Esse número é obtido subtraindo 4, o número de coeficientes de fit3 (as 3 preditoras e o intercepto), de 47, o número de observações em swiss. Guarde o valor de deviance(fit3)/43 numa variável chamada d."
+  CorrectAnswer: d <- deviance(fit3)/43
+  AnswerTests: ANY_of_exprs('d <- deviance(fit3)/43', 'd <- deviance(fit3)/df.residual(fit3)', 'd <- deviance(fit3)/fit3$df.residual')
+  Hint: "Digite \"d <- deviance(fit3)/43\" no prompt do R."
+
+- Class: cmd_question
+  Output: "O numerador é a diferença deviance(fit1)-deviance(fit3) dividida pela diferença entre os graus de liberdade dos resíduos de fit1 e fit3, ou seja, 2. A justificativa teórica fica de fora, mas a ideia essencial é que fit3 tem 2 preditoras a mais que fit1. Calcule o numerador e guarde-o numa variável chamada n."
+  CorrectAnswer: n <- (deviance(fit1) - deviance(fit3))/2
+  AnswerTests: ANY_of_exprs('n <- (deviance(fit1) - deviance(fit3))/2', 'n <- (deviance(fit1) - deviance(fit3))/(45-43)', 'n <- (deviance(fit1) - deviance(fit3))/(df.residual(fit1)-df.residual(fit3))', 'n <- (deviance(fit1) - deviance(fit3))/(fit1$df.residual - fit3$df.residual)')
+  Hint: "Digite \"n <- (deviance(fit1) - deviance(fit3))/2\" no prompt do R."
+
+- Class: cmd_question
+  Output: "Calcule a razão n/d e veja que ela é igual ao valor F, 20.968, dado por anova()."
+  CorrectAnswer: n/d
+  AnswerTests: omnitest(correctExpr='n/d')
+  Hint: "Digite \"n/d\" no prompt do R."
+
+- Class: cmd_question
+  Output: "Agora vamos calcular o valor de p, que é a probabilidade de obter um valor igual ou maior que n/d numa distribuição F com parâmetros 2 e 43, se a hipótese nula for verdadeira. Esse valor aparece como 4.407e-07 na coluna Pr(>F) da tabela de anova(), um valor muito improvável se a hipótese nula fosse verdadeira. Calcule esse valor de p usando pf(n/d, 2, 43, lower.tail=FALSE)."
+  CorrectAnswer: pf(n/d, 2, 43, lower.tail=FALSE)
+  AnswerTests: omnitest(correctExpr='pf(n/d, 2, 43, lower.tail=FALSE)')
+  Hint: "Digite \"pf(n/d, 2, 43, lower.tail=FALSE)\" no prompt do R."
+
+- Class: cmd_question
+  Output: "Com esse valor de p, é extremamente improvável que estejamos rejeitando a hipótese nula por engano. Podemos confiar que fit3 é significativamente melhor que fit1, com uma ressalva - o teste F supõe que os resíduos do modelo são aproximadamente normais (além de independentes e com variância constante). Se não forem, o valor de p pode não ser confiável. Por isso vale verificar a normalidade dos resíduos. O teste de Shapiro-Wilk é rápido de fazer no R; a hipótese nula dele é a normalidade. Use shapiro.test(fit3$residuals) para testar os resíduos de fit3."
+  CorrectAnswer: shapiro.test(fit3$residuals)
+  AnswerTests: ANY_of_exprs('shapiro.test(fit3$residuals)', 'shapiro.test(residuals(fit3))')
+  Hint: "Digite \"shapiro.test(fit3$residuals)\" no prompt do R."
+
+- Class: text
+  Output: "O valor de p do Shapiro-Wilk, 0.336, não rejeita a normalidade. Um cuidado, porém - não rejeitar não prova que os resíduos são normais. Com amostras pequenas, o teste tem pouco poder para detectar desvios; com amostras grandes, rejeita desvios pequenos que não atrapalham o teste F. Por isso, o gráfico QQ dos resíduos (plot(fit3, which=2), que você viu na lição de diagnóstico) costuma ser mais informativo do que o valor de p."
+
+- Class: cmd_question
+  Output: "Para mostrar o uso de anova() com mais de dois modelos, criei fit5 e fit6, com os 5 primeiros e com todos os 6 coeficientes (incluindo o intercepto), respectivamente. Assim, fit1, fit3, fit5 e fit6 formam uma sequência de modelos aninhados - as preditoras de cada um estão incluídas nas do seguinte. Digite anova(fit1, fit3, fit5, fit6) no prompt do R para ver como fica."
+  CorrectAnswer: anova(fit1, fit3, fit5, fit6)
+  AnswerTests: omnitest(correctExpr='anova(fit1, fit3, fit5, fit6)')
+  Hint: "Digite \"anova(fit1, fit3, fit5, fit6)\" no prompt do R."
+
+- Class: text
+  Output: "Parece que cada modelo é uma melhora significativa em relação ao anterior. Repare num detalhe - na segunda linha, o F agora é 30.21, e não 20.968 como antes. A soma de quadrados (3102.2) é a mesma, mas, com vários modelos, anova() usa no denominador a variância residual do maior modelo da lista (fit6), e não a de fit3. Antes de terminar a lição, vamos revisar alguns pontos importantes."
+
+- Class: mult_question
+  Output: "Omitir uma preditora pode enviesar a estimativa do coeficiente de algumas outras preditoras. De quais?"
+  AnswerChoices: Das preditoras correlacionadas com ela;Das preditoras não correlacionadas com ela
+  CorrectAnswer: Das preditoras correlacionadas com ela
+  AnswerTests: omnitest(correctVal='Das preditoras correlacionadas com ela')
+  Hint: "A outra opção."
+
+- Class: mult_question
+  Output: "Incluir mais preditoras diminui (ou, no mínimo, não aumenta) a soma dos quadrados dos resíduos de um modelo, mesmo que as novas preditoras sejam irrelevantes. Verdadeiro ou falso?"
+  AnswerChoices: Verdadeiro;Falso;Depende das circunstâncias.
+  CorrectAnswer: Verdadeiro
+  AnswerTests: omnitest(correctVal='Verdadeiro')
+  Hint: "Não depende das circunstâncias."
+
+- Class: mult_question
+  Output: "Ao acrescentar preditoras, a redução na soma dos quadrados dos resíduos deve ser testada para ver se vai além do que se espera só pela perda de graus de liberdade. A função anova() do R usa um teste F para isso. O que mais deve ser feito para garantir que anova() se aplica?"
+  AnswerChoices: Verificar se os resíduos do modelo são aproximadamente normais.;Verificar se as preditoras são normais.;Verificar se os resíduos têm média zero.
+  CorrectAnswer: Verificar se os resíduos do modelo são aproximadamente normais.
+  AnswerTests: omnitest(correctVal='Verificar se os resíduos do modelo são aproximadamente normais.')
+  Hint: "O teste F supõe resíduos aproximadamente normais. As preditoras não precisam ser normais, e os resíduos de um modelo com intercepto sempre têm média zero."
+
+- Class: text
+  Output: "Isso encerra a lição sobre subajuste e sobreajuste."
+
+- Class: text
+  Output: "Parabéns! Você terminou esta lição sobre Sobreajuste e Subajuste."
