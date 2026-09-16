@@ -1,0 +1,11 @@
+local({
+  fit.1 <- lm(y ~ x, out2[-1,])
+  fit <- lm(y ~ x, out2)
+  plot(c(-3, 6), c(-3, 6), type='n', xlab="x", ylab="y", main="Outlier com grande influência")
+  points(y ~ x, out2, pch=21, bg="lightblue")
+  points(out2[1,2], out2[1,1], cex = 2, bg = "darkorange", col = "black", pch = 21)
+  text(out2[1,2], out2[1,1]+.25, "Outlier", pos=3)
+  abline(fit.1, lwd=2)
+  abline(fit, col='darkorange', lwd=4, lty=2)
+  legend('bottomright', c("Ajuste sem o outlier", "Ajuste com o outlier"), lty=1:2, col=c("black", "darkorange"), lwd=c(2,4))
+})

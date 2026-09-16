@@ -1,0 +1,209 @@
+- Class: meta
+  Course: Modelos de Regressão
+  Lesson: Exemplos de Regressão Múltipla 3
+  Author: Swirl Coders, Diogo B. Provete (Tradução)
+  Type: Standard
+  Organization: Johns Hopkins Bloomberg School of Public Health
+  Version: 2.2.0
+
+- Class: text
+  Output: "Exemplos de Regressão Múltipla 3. (Os slides desta e de outras disciplinas de Ciência de Dados, em inglês, estão no GitHub, em https://github.com/DataScienceSpecialization/courses. Se quiser usá-los, é preciso baixá-los como arquivo zip e abri-los no seu computador. Esta lição corresponde a Regression_Models/02_02_multivariateExamples.)"
+
+- Class: text
+  Output: Esta é a terceira e última lição em que vamos ver modelos de regressão com mais de uma variável independente, ou preditora. Começamos com dados de fome da OMS, que tomamos a liberdade de carregar para você. A OMS é a Organização Mundial da Saúde, e esses dados tratam de crianças pequenas de vários países e das taxas de fome entre elas, medidas como a porcentagem de crianças abaixo do peso e compiladas pela organização ao longo de vários anos. O arquivo csv original era muito grande, e ficamos só com as linhas que identificam o sexo da criança como masculino (Male) ou feminino (Female). Lemos os dados para você no data frame "hunger", para que possa acessá-los com facilidade.
+
+- Class: cmd_question
+  Output: Como na lição anterior, vamos primeiro entender melhor o conjunto de dados. Use a função dim do R para ver as dimensões de hunger.
+  CorrectAnswer: dim(hunger)
+  AnswerTests: omnitest(correctExpr='dim(hunger)')
+  Hint: Digite "dim(hunger)" no prompt do R.
+
+- Class: exact_question
+  Output: Quantas observações tem hunger?
+  CorrectAnswer: 948
+  AnswerTests: omnitest(correctVal=948)
+  Hint: A função dim do R devolve dois números, o número de linhas e o número de colunas. Cada linha é uma observação.
+
+- Class: cmd_question
+  Output: Agora use a função names do R para descobrir o que representam as 13 colunas de hunger.
+  CorrectAnswer: names(hunger)
+  AnswerTests: omnitest(correctExpr='names(hunger)')
+  Hint: Digite "names(hunger)" no prompt do R.
+
+- Class: text
+  Output: A coluna Numeric de cada linha diz a porcentagem de crianças com menos de 5 anos que estavam abaixo do peso quando aquela observação foi feita. É uma das colunas em que vamos nos concentrar nesta lição. Ela será a resposta (variável dependente) dos modelos que vamos gerar.
+
+- Class: cmd_question
+  Output: Primeiro, vamos olhar a taxa de fome e ver como ela mudou ao longo do tempo. Use a função lm do R para gerar o modelo linear em que a taxa de fome, Numeric, depende da preditora Year (ano). Guarde o resultado na variável fit.
+  CorrectAnswer: fit <- lm(hunger$Numeric ~ hunger$Year)
+  AnswerTests: creates_lm_model('fit <- lm(hunger$Numeric ~ hunger$Year)')
+  Hint: Lembre que é preciso passar uma fórmula, dependente ~ independente, ao modelo. Também pode ser preciso indicar o conjunto de dados, se ele não ficar claro pelas variáveis da fórmula. Então digite "fit <- lm(Numeric ~ Year, hunger)" no prompt do R ou, mais simplesmente, fit <- lm(hunger$Numeric ~ hunger$Year)
+
+- Class: cmd_question
+  Output: Agora veja a parte dos coeficientes do resumo de fit.
+  CorrectAnswer: summary(fit)$coef
+  AnswerTests: omnitest(correctExpr='summary(fit)$coef')
+  Hint: Digite "summary(fit)$coef" no prompt do R.
+
+- Class: mult_question
+  Output: Qual é o coeficiente de hunger$Year?
+  AnswerChoices: -0.30840;0.06053;634.47966;121.14460
+  CorrectAnswer: -0.30840
+  AnswerTests: omnitest(correctVal='-0.30840')
+  Hint: Olhe a linha hunger$Year e a coluna Estimate da saída do resumo.
+
+- Class: mult_question
+  Output: O que mostra a estimativa negativa de hunger$Year?
+  AnswerChoices: Com o passar do tempo, a taxa de fome diminui;Com o passar do tempo, a taxa de fome aumenta;Não faço a menor ideia
+  CorrectAnswer: Com o passar do tempo, a taxa de fome diminui
+  AnswerTests: omnitest(correctVal='Com o passar do tempo, a taxa de fome diminui')
+  Hint: Lembre o que significa a inclinação de uma linha. A cada unidade de mudança na variável independente (Year), há uma mudança de -.3084 (uma diminuição) na variável dependente (porcentagem de crianças com fome).
+
+- Class: mult_question
+  Output: O que representa o intercepto do modelo?
+  AnswerChoices: a porcentagem de crianças com fome no ano 0;o número de crianças com fome no ano 0;o número de crianças entrevistadas na pesquisa
+  CorrectAnswer: a porcentagem de crianças com fome no ano 0
+  AnswerTests: omnitest(correctVal='a porcentagem de crianças com fome no ano 0')
+  Hint: Numeric é uma porcentagem de crianças com fome, e o intercepto é o ponto em que a linha cruza o eixo. O eixo representa o valor 0.
+
+- Class: cmd_question
+  Output: Agora vamos usar a capacidade do R de selecionar subconjuntos para comparar as taxas de fome dos dois sexos e ver como, ou se, elas diferem. De novo, use a função lm do R para gerar o modelo linear em que a taxa de fome (Numeric) das meninas depende de Year. Guarde o resultado na variável lmF. Você vai precisar da construção x[hunger$Sex=="Female"] para selecionar tanto os valores certos de Numeric quanto os anos certos.
+  CorrectAnswer: lmF <- lm(hunger$Numeric[hunger$Sex=="Female"] ~ hunger$Year[hunger$Sex=="Female"])
+  AnswerTests: creates_lm_model('lmF <- lm(hunger$Numeric[hunger$Sex=="Female"] ~ hunger$Year[hunger$Sex==\"Female\"])')
+  Hint: Digite lmF <- lm(hunger$Numeric[hunger$Sex=="Female"] ~ hunger$Year[hunger$Sex=="Female"]) no prompt do R ou, mais simplesmente, lmF <- lm(Numeric[Sex=="Female"] ~ Year[Sex=="Female"],hunger)
+
+- Class: cmd_question
+  Output: Faça o mesmo para os meninos e guarde o resultado em lmM.
+  CorrectAnswer: lmM <- lm(hunger$Numeric[hunger$Sex=="Male"] ~ hunger$Year[hunger$Sex=="Male"])
+  AnswerTests: creates_lm_model('lmM <- lm(hunger$Numeric[hunger$Sex=="Male"] ~ hunger$Year[hunger$Sex=="Male"])')
+  Hint: Digite lmM <- lm(hunger$Numeric[hunger$Sex=="Male"] ~ hunger$Year[hunger$Sex=="Male"]) no prompt do R ou, mais simplesmente, lmM <- lm(Numeric[Sex=="Male"] ~ Year[Sex=="Male"],hunger)
+
+- Class: figure
+  Output: Agora vamos desenhar os pontos e as linhas ajustadas, com cores diferentes para distinguir meninos (linha azul) e meninas (linha vermelha, pontos rosa).
+  Figure: plot1.R
+  FigureType: new
+
+- Class: mult_question
+  Output: Pelo gráfico, vemos que as linhas não são exatamente paralelas. No lado direito (perto de 2010), elas estão mais próximas do que no lado esquerdo (perto de 1970). Como não são paralelas, suas inclinações devem ser diferentes, embora ambas sejam negativas. Qual destas expressões do R confirmaria que a inclinação dos meninos é negativa?
+  AnswerChoices: lmM$coef[2];lmF$coef[2];lmM$coef[1]
+  CorrectAnswer: lmM$coef[2]
+  AnswerTests: omnitest(correctVal='lmM$coef[2]')
+  Hint: Primeiro, descarte a opção das meninas, já que a pergunta é sobre os meninos. Depois, lembre que o primeiro coeficiente é o intercepto da linha e o segundo é a inclinação.
+
+- Class: text
+  Output: Agora, em vez de separar os dados em subconjuntos por sexo, vamos usar o sexo como mais uma preditora para criar o modelo linear lmBoth. Lembre que, no R, fazemos isso colocando um sinal de mais "+" entre as variáveis independentes, e a fórmula fica assim - dependente ~ independente1 + independente2.
+
+- Class: cmd_question
+  Output: Crie lmBoth agora. Numeric é a variável dependente; Year e Sex são as independentes. Os dados são "hunger". Em lmBoth, coloque Year primeiro e Sex em segundo.
+  CorrectAnswer: lmBoth <- lm(hunger$Numeric ~ hunger$Year + hunger$Sex)
+  AnswerTests: creates_lm_model('lmBoth <- lm(hunger$Numeric ~ hunger$Year + hunger$Sex)')
+  Hint: Digite lmBoth <- lm(hunger$Numeric ~ hunger$Year + hunger$Sex) ou, mais simplesmente, lmBoth <- lm(Numeric ~ Year+Sex,hunger)
+
+- Class: cmd_question
+  Output: Agora veja o resumo de lmBoth com o comando summary do R.
+  CorrectAnswer: summary(lmBoth)
+  AnswerTests: omnitest(correctExpr='summary(lmBoth)')
+  Hint: Digite summary(lmBoth) no prompt do R.
+
+- Class: text
+  Output: Repare que aparecem três estimativas - o intercepto, uma para Year e uma para Male. O que aconteceu com a estimativa de Female? Sex é uma variável categórica, portanto um fator neste modelo, com os níveis Female e Male. Lembre da lição anterior (e dos slides) que o R usa o primeiro nível (em ordem alfabética) como referência, e sua estimativa é o intercepto, que representa a porcentagem de meninas com fome no ano 0. A estimativa do nível Male é uma distância em relação ao intercepto (a estimativa do grupo de referência, Female). Para calcular a porcentagem de meninos com fome no ano 0, é preciso somar o intercepto e a estimativa de Male dada pelo modelo. (Um cuidado - "ano 0" é uma extrapolação muito além dos dados, que vão de 1970 a 2012, e por isso dá valores acima de 100%, sem sentido biológico. Aqui ele serve só para entender a álgebra do modelo.)
+
+- Class: mult_question
+  Output: Qual era a porcentagem de meninos com fome no ano 0?
+  AnswerChoices: 635.431;1.9027;633.2199;Não dá para saber, porque os dados começam em 1970.
+  CorrectAnswer: 635.431
+  AnswerTests: omnitest(correctVal='635.431')
+  Hint: O intercepto é a porcentagem de meninas com fome no ano 0, e o intercepto mais hunger$SexMale é a porcentagem de meninos com fome no ano 0.
+
+- Class: mult_question
+  Output: O que representa a estimativa de hunger$Year?
+  AnswerChoices: a diminuição anual na porcentagem de crianças com fome, dos dois sexos;a diminuição anual na porcentagem de meninas com fome;a diminuição anual na porcentagem de meninos com fome
+  CorrectAnswer: a diminuição anual na porcentagem de crianças com fome, dos dois sexos
+  AnswerTests: omnitest(correctVal='a diminuição anual na porcentagem de crianças com fome, dos dois sexos')
+  Hint: O modelo usou todos os dados e não especificou qual sexo considerar.
+
+- Class: figure
+  Output: Agora vamos desenhar de novo os pontos, com duas novas linhas de cores diferentes. A linha vermelha tem o intercepto das meninas, e a azul, o intercepto dos meninos.
+  Figure: parallelplot.R
+  FigureType: new
+
+- Class: mult_question
+  Output: As linhas parecem paralelas. Isso acontece porque
+  AnswerChoices: elas têm a mesma inclinação;elas têm inclinações muito próximas;Não faço ideia
+  CorrectAnswer: elas têm a mesma inclinação
+  AnswerTests: omnitest(correctVal='elas têm a mesma inclinação')
+  Hint: Por definição, linhas paralelas têm a mesma inclinação.
+
+- Class: text
+  Output: Agora vamos considerar a interação entre ano e sexo, para ver como ela afeta as mudanças nas taxas de fome. Para isso, vamos acrescentar um terceiro termo à parte das preditoras na fórmula do modelo, o produto de ano e sexo.
+
+- Class: cmd_question
+  Output: Crie o modelo lmInter. Numeric é a resposta, e as três preditoras são Year, Sex e Sex*Year. Os dados são "hunger".
+  CorrectAnswer: lmInter <- lm(hunger$Numeric ~ hunger$Year + hunger$Sex + hunger$Year * hunger$Sex)
+  AnswerTests: creates_lm_model('lmInter <- lm(hunger$Numeric ~ hunger$Year + hunger$Sex + hunger$Year * hunger$Sex)')
+  Hint: Digite lmInter <- lm(hunger$Numeric ~ hunger$Year + hunger$Sex + hunger$Year * hunger$Sex) ou lmInter <- lm(Numeric ~ Year + Sex + Year*Sex, hunger)
+
+- Class: cmd_question
+  Output: Agora veja o resumo de lmInter com o comando summary do R.
+  CorrectAnswer: summary(lmInter)
+  AnswerTests: omnitest(correctExpr='summary(lmInter)')
+  Hint: Digite summary(lmInter) no prompt do R.
+
+- Class: mult_question
+  Output: Qual é a porcentagem de meninas com fome no ano 0?
+  AnswerChoices: 603.5058;61.94772;O modelo não informa.
+  CorrectAnswer: 603.5058
+  AnswerTests: omnitest(correctVal='603.5058')
+  Hint: Como antes, o intercepto é a porcentagem de fome do primeiro nível do fator, neste caso as meninas.
+
+- Class: mult_question
+  Output: Qual é a porcentagem de meninos com fome no ano 0?
+  AnswerChoices: 665.4535;603.5058;61.94772;O modelo não informa.
+  CorrectAnswer: 665.4535
+  AnswerTests: omnitest(correctVal='665.4535')
+  Hint: Como antes, a estimativa associada a SexMale é a distância em relação ao intercepto; então o intercepto da linha dos meninos é o intercepto mais a estimativa associada aos meninos.
+
+- Class: mult_question
+  Output: Qual é a mudança anual na porcentagem de meninas com fome?
+  AnswerChoices: -0.29340;-0.03000;0.08547;O modelo não informa.
+  CorrectAnswer: -0.29340
+  AnswerTests: omnitest(correctVal='-0.29340')
+  Hint: A estimativa associada a Year representa a mudança anual na porcentagem de meninas com fome.
+
+- Class: mult_question
+  Output: Qual é a mudança anual na porcentagem de meninos com fome?
+  AnswerChoices: -0.32340;-0.03000;0.12087;O modelo não informa.
+  CorrectAnswer: -0.32340
+  AnswerTests: omnitest(correctVal='-0.32340')
+  Hint: A estimativa associada a Year:SexMale é a diferença entre a mudança anual dos meninos e a das meninas. Some-a à estimativa de Year.
+
+- Class: figure
+  Output: Agora vamos desenhar de novo os pontos, com duas novas linhas de cores diferentes para distinguir os sexos.
+  Figure: interactplot.R
+  FigureType: new
+
+- Class: mult_question
+  Output: Qual linha tem a inclinação mais acentuada?
+  AnswerChoices: Male;Female;Parecem ter a mesma inclinação
+  CorrectAnswer: Male
+  AnswerTests: omnitest(correctVal='Male')
+  Hint: As linhas não são paralelas e acabam se cruzando. A linha mais distante da horizontal (que tem inclinação 0) tem a inclinação mais acentuada e indica uma taxa de mudança mais rápida. Qual linha tem a inclinação mais distante de 0?
+
+- Class: text
+  Output: Um cuidado antes de seguir - no resumo de lmInter, o termo de interação (Year:SexMale) não é significativo (p de cerca de 0.80). A diferença entre as inclinações dos dois sexos é pequena e pode ser só variação amostral; ou seja, os dados não dão evidência de que a fome diminua em ritmos diferentes para meninos e meninas. Por fim, repare que as coisas ficam um pouco mais complicadas quando a interação é entre preditoras contínuas (e não fatores). Os slides mostram a álgebra por trás disso, mas podemos resumir.
+
+- Class: text
+  Output: Suponha que temos duas preditoras que interagem e que uma delas é mantida constante. A mudança esperada na resposta para uma unidade de mudança na outra preditora é o coeficiente da preditora que muda + o coeficiente da interação * o valor da preditora mantida constante.
+
+- Class: text
+  Output: Suponha que o modelo linear seja Hi = b0 + (b1*Ii) + (b2*Yi)+ (b3*Ii*Yi) + ei. Aqui os H's representam as respostas, os I's e Y's as preditoras, nenhuma delas categórica, e os b's os coeficientes estimados. Podemos ignorar os e's, que representam os resíduos do modelo. Essa equação modela uma interação contínua, já que nem I nem Y é uma categoria ou fator. Suponha que fixamos I em algum valor e deixamos Y variar.
+
+- Class: mult_question
+  Output: Qual expressão representa a mudança em H por unidade de mudança em Y, dado que I está fixado em 5?
+  AnswerChoices: b2+b3*5;b1+5*b3;b0+b2;b2+b3*Y
+  CorrectAnswer: b2+b3*5
+  AnswerTests: omnitest(correctVal='b2+b3*5')
+  Hint: A mudança esperada na resposta é a estimativa da preditora que muda (Y) + a estimativa da interação (b3) * o valor da preditora mantida constante (5).
+
+- Class: text
+  Output: Parabéns! Você terminou esta última lição sobre modelos de regressão com várias variáveis.

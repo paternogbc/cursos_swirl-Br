@@ -50,9 +50,25 @@ Seja um [tradutor voluntário](https://github.com/paternogbc/cursos_swirl-Br/wik
  * Todos os voluntários receberão crédito pelas traduções realizadas e serão incluídos na lista de colaboradores do __swirl-Br__.
  * Seu nome será incluído como autor das aulas que vc traduzir.
 
+## Cursos traduzidos:
+ 1. [Modelos de Regressão](Modelos_de_Regressao) — tradução completa (13 lições) do curso [Regression Models](https://github.com/swirldev/swirl_courses/tree/master/Regression_Models)
+
+Para instalar um curso traduzido, baixe o repositório e instale a pasta do curso:
+
+```r
+library(swirl)
+zip <- tempfile(fileext = ".zip")
+download.file("https://github.com/paternogbc/cursos_swirl-Br/archive/refs/heads/master.zip",
+              zip, mode = "wb")
+pasta <- tempfile()
+unzip(zip, exdir = pasta)
+install_course_directory(file.path(pasta, "cursos_swirl-Br-master", "Modelos_de_Regressao"))
+select_language("portuguese", append_rprofile = TRUE)  # mensagens do swirl em português
+swirl()
+```
+
 ## Cursos em tradução:
  1. [R Programming](https://github.com/swirldev/swirl_courses/tree/master/R_Programming_Alt)
- 2. [Regression Models](https://github.com/swirldev/swirl_courses/tree/master/Regression_Models)
  
 ## Tradutores voluntários:  
 Confira a lista de voluntários e os cursos em tradução: [Lista de tradutores](https://github.com/paternogbc/cursos_swirl-Br/blob/master/Lista_tradutores.md)
