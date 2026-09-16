@@ -1,0 +1,180 @@
+- Class: meta
+  Course: Modelos de Regressão
+  Lesson: Respostas de Contagem
+  Author: Swirl Coders, Diogo B. Provete (Tradução)
+  Type: Standard
+  Organization: Johns Hopkins Bloomberg School of Public Health
+  Version: 2.2.0
+
+- Class: text
+  Output: "Respostas de Contagem. (Os slides desta e de outras disciplinas de Ciência de Dados, em inglês, estão no GitHub, em https://github.com/DataScienceSpecialization/courses. Se quiser usá-los, é preciso baixá-los como arquivo zip e abri-los no seu computador. Esta lição corresponde a Regression_Models/03_03_countOutcomes.)"
+
+- Class: text
+  Output: "Muitos dados vêm na forma de contagens. Podem ser ligações para uma central de atendimento, número de casos de gripe numa região ou número de carros que atravessam uma ponte. Os dados também podem vir na forma de taxas, por exemplo, a porcentagem de crianças aprovadas numa prova. Nesta lição, vamos usar a regressão de Poisson para analisar as visitas diárias a um site à medida que ele fica mais popular, e para analisar a porcentagem de visitas que vêm de links em outro site."
+
+- Class: text
+  Output: "As visitas a um site tendem a ocorrer de forma independente, uma de cada vez, a uma certa taxa média. A distribuição de Poisson descreve processos aleatórios desse tipo. Um processo de Poisson é caracterizado por um único parâmetro, a taxa esperada de ocorrência, geralmente chamada de lambda. No nosso caso, lambda será o número esperado de visitas por dia. Claro que, à medida que o site fica mais popular, lambda cresce. Ou seja, nosso lambda vai depender do tempo. Vamos usar a regressão de Poisson para modelar essa dependência."
+
+- Class: cmd_question
+  Output: "Curiosamente, a variância de um processo de Poisson tem o mesmo valor que a média, lambda. Você pode mostrar isso rapidamente gerando, digamos, n=1000 amostras de um processo de Poisson com a função rpois(n, lambda) do R e calculando a variância amostral. Por exemplo, digite var(rpois(1000, 50)). A variância amostral não vai ser exatamente igual ao valor teórico, claro, mas vai ficar bem perto."
+  CorrectAnswer: var(rpois(1000, 50))
+  AnswerTests: expr_uses_func('var');expr_uses_func('rpois')
+  Hint: "Digite \"var(rpois(1000, 50))\" no prompt do R."
+
+- Class: mult_question
+  Output: "Um teorema famoso implica que somas devidamente normalizadas de variáveis aleatórias independentes e identicamente distribuídas tendem a ter distribuição normal à medida que o número de amostras cresce. Que teorema é esse?"
+  AnswerChoices: O Teorema Central do Limite;O Teorema de Gauss-Markov;O Teorema de Pitágoras
+  CorrectAnswer: O Teorema Central do Limite
+  AnswerTests: omnitest(correctVal='O Teorema Central do Limite')
+  Hint: "Ele trata de limites."
+
+- Class: figure
+  Output: "A rigor, as contagens geradas por um processo de Poisson são um pouco diferentes das somas normalizadas do Teorema Central do Limite. Mas as contagens num dado período representam somas de cada vez mais termos à medida que lambda aumenta. De fato, pode-se mostrar formalmente que, para lambda grande, a distribuição de Poisson é bem aproximada por uma normal. A figura mostra esse efeito - a função de probabilidade passa de esparsa e assimétrica, à esquerda, para uma curva densa em forma de sino, à direita, conforme lambda vai de 2 a 100."
+  Figure: poisson_2_normal.R
+  FigureType: new
+
+- Class: figure
+  Output: "Na regressão de Poisson, supõe-se que o log de lambda é uma função linear das preditoras. Como vamos modelar o crescimento das visitas a um site, o log de lambda será uma função linear da data - log(lambda) = b0 + b1*data. Isso implica que o número médio de visitas por dia, lambda, cresce exponencialmente com a data - lambda = exp(b0)*exp(b1)^data. A curva preta suave desenhada sobre os dados também sugere crescimento exponencial. Assim, exp(b1) representa o fator pelo qual as visitas médias são multiplicadas a cada dia; o crescimento percentual por dia é (exp(b1) - 1)*100."
+  Figure: hits.R
+  FigureType: new
+
+- Class: cmd_question
+  Output: "Nossos dados estão num data frame chamado hits. Use View(hits), head(hits) ou tail(hits) para examiná-los agora."
+  CorrectAnswer: View(hits)
+  AnswerTests: ANY_of_exprs('View(hits)', 'head(hits)', 'tail(hits)')
+  Hint: "Digite \"View(hits)\", \"head(hits)\" ou \"tail(hits)\". Qualquer um serve."
+
+- Class: text
+  Output: "Há três colunas de dados, chamadas date, visits e simplystats. Os dados vão de 1º de janeiro de 2011 a 31 de dezembro de 2012, um valor por dia, e contam as visitas ao site do Leek Group, o grupo de pesquisa de Jeff Leek. A coluna simplystats registra quantas visitas vieram de links em outro site, o blog Simply Statistics. Voltaremos a essa coluna depois. Por enquanto, nos interessam as colunas date e visits. A data será nossa preditora."
+
+- Class: cmd_question
+  Output: "Nossas datas estão representadas com a classe Date do R. Confirme isso digitando class(hits[,'date']), ou algo equivalente."
+  CorrectAnswer: class(hits[,'date'])
+  AnswerTests: ANY_of_exprs("class(hits[,'date'])", 'class(hits[,"date"])', 'class(hits[,1])', 'class(hits$date)')
+  Hint: "Digite \"class(hits[,'date'])\", ou algo equivalente, no prompt do R."
+
+- Class: cmd_question
+  Output: "A classe Date do R representa as datas como o número de dias desde (ou antes de) 1º de janeiro de 1970. Elas são, essencialmente, números e, até certo ponto, podem ser tratadas como tal. Datas podem, por exemplo, ser somadas ou subtraídas, ou facilmente convertidas em números. Digite as.integer(head(hits[,'date'])) para ver o que quero dizer."
+  CorrectAnswer: as.integer(head(hits[,'date']))
+  AnswerTests: ANY_of_exprs("as.integer(head(hits[,'date']))", 'as.integer(head(hits[,"date"]))', 'as.integer(head(hits[,1]))', 'as.integer(head(hits$date))')
+  Hint: "Digite \"as.integer(head(hits[,'date']))\", ou algo equivalente, no prompt do R."
+
+- Class: cmd_question
+  Output: "As propriedades aritméticas das datas nos permitem usá-las como preditoras. Vamos usar a regressão de Poisson para prever log(lambda) como função linear da data, de modo a maximizar a verossimilhança das contagens que de fato observamos. Nossa fórmula será visits ~ date. Como nossas respostas (visits) são contagens, a família será 'poisson', e o terceiro argumento serão os dados, hits. Crie esse modelo e guarde-o numa variável chamada mdl, usando a expressão a seguir ou algo equivalente - mdl <- glm(visits ~ date, poisson, hits)."
+  CorrectAnswer: mdl <- glm(visits ~ date, poisson, hits)
+  AnswerTests: creates_glm_model('mdl <- glm(visits ~ date, poisson, hits)')
+  Hint: "Digite \"mdl <- glm(visits ~ date, poisson, hits)\", ou algo equivalente, no prompt do R."
+
+- Class: figure
+  Output: "A figura sugere que nossa regressão de Poisson descreve bem a tendência dos dados. A linha preta é o lambda estimado, isto é, o número médio de visitas por dia. Vemos que a média de visitas por dia passou de cerca de 5 no início de 2011 para cerca de 11 no início de 2012, e para cerca de 26 no fim de 2012. Ela mais que dobra a cada ano."
+  Figure: model_1.R
+  FigureType: new
+
+- Class: cmd_question
+  Output: "Digite summary(mdl) para examinar os coeficientes estimados e sua significância."
+  CorrectAnswer: summary(mdl)
+  AnswerTests: omnitest('summary(mdl)')
+  Hint: "Digite \"summary(mdl)\" no prompt do R."
+
+- Class: text
+  Output: "Os dois coeficientes são significativos, a muito mais que dois erros-padrão de zero. O Residual deviance também é muito menor que o Null deviance, indicando um efeito forte. (Lembre que a diferença entre o Null deviance e o Residual deviance segue aproximadamente uma qui-quadrado com 1 grau de liberdade.) O intercepto, b0, representa apenas o log da média de visitas na data 0 do R, ou seja, 1º de janeiro de 1970 - uma extrapolação muito além dos dados, sem interpretação prática. Vamos ignorá-lo e focar no coeficiente da data, b1, já que exp(b1) estima o fator pelo qual a média de visitas é multiplicada a cada dia de vida do site."
+
+- Class: cmd_question
+  Output: "Obtenha o intervalo de confiança de 95% de exp(b1) aplicando exp a confint(mdl, 'date')."
+  CorrectAnswer: exp(confint(mdl, 'date'))
+  AnswerTests: ANY_of_exprs("exp(confint(mdl, 'date'))", 'exp(confint(mdl, "date"))', "exp(confint(mdl,2))", "exp(confint(mdl, 2))")
+  Hint: "Digite \"exp(confint(mdl, 'date'))\" ou \"exp(confint(mdl, 2))\" no prompt do R."
+
+- Class: text
+  Output: "Estima-se que as visitas sejam multiplicadas por um fator entre 1.002192 e 1.002399 por dia. Ou seja, um aumento entre 0.2192% e 0.2399% por dia. Isso representa mais do que dobrar a cada ano (exp(365*b1) fica entre cerca de 2.2 e 2.4)."
+
+- Class: figure
+  Output: "Nosso modelo parece uma boa descrição dos dados, mas nenhum modelo é perfeito, e muitas vezes aprendemos sobre o processo que gerou os dados procurando as falhas do modelo. Como mostra a figura, uma delas é o 'excesso de zeros' (zero inflation) nos primeiros 20 dias de janeiro de 2011, antes de o site ter qualquer visita. O modelo superestima sistematicamente o número de visitas nesse período. Uma falha menos óbvia é que o desvio-padrão dos dados pode estar crescendo com lambda mais rápido do que um modelo de Poisson permite. Dá para ver essa possibilidade no gráfico da direita, comparando visualmente o espalhamento dos pontos verdes com o desvio-padrão previsto pelo modelo (tracejado preto). Além disso, há quatro ou cinco picos de popularidade em que o número de visitas passa muito de dois desvios-padrão acima da média. Talvez eles se devam a menções em outro site."
+  Figure: shortcomings.R
+  FigureType: new
+
+- Class: text
+  Output: "Esse segundo problema tem nome - sobredispersão (overdispersion). Um diagnóstico rápido é dividir o Residual deviance pelos seus graus de liberdade. Num modelo de Poisson adequado, essa razão fica perto de 1."
+
+- Class: cmd_question
+  Output: "Calcule deviance(mdl)/df.residual(mdl)."
+  CorrectAnswer: deviance(mdl)/df.residual(mdl)
+  AnswerTests: ANY_of_exprs('deviance(mdl)/df.residual(mdl)', 'deviance(mdl)/mdl$df.residual', '3121.6/729')
+  Hint: "Digite \"deviance(mdl)/df.residual(mdl)\" no prompt do R."
+
+- Class: text
+  Output: "A razão é de cerca de 4.3, bem acima de 1. Com sobredispersão, os erros-padrão do modelo de Poisson ficam pequenos demais, e os valores de p, otimistas demais. Uma saída simples é a família quasipoisson, que estima a dispersão a partir dos dados - glm(visits ~ date, quasipoisson, hits) dá os mesmos coeficientes, com erros-padrão cerca de 2.2 vezes maiores (aqui, a data continua claramente significativa). Outra opção comum é o modelo binomial negativo, com a função glm.nb do pacote MASS."
+
+- Class: figure
+  Output: "Parece que pelo menos alguns dos picos vêm de menções. A coluna simplystats dos nossos dados registra o número de visitas ao site do Leek Group que vieram do site relacionado Simply Statistics (isto é, visitas geradas por cliques num link para o Leek Group que apareceu num post do Simply Statistics)."
+  Figure: bursts.R
+  FigureType: new
+
+- Class: cmd_question
+  Output: "Na figura, o maior número de visitas aconteceu no fim de 2012. As visitas vindas do blog Simply Statistics também foram as maiores nesse dia. Para achar a data exata, podemos usar which.max(hits[,'visits']). Faça isso agora."
+  CorrectAnswer: which.max(hits[,'visits'])
+  AnswerTests: omnitest("which.max(hits[,'visits'])", 704)
+  Hint: "Digite \"which.max(hits[,'visits'])\", ou algo equivalente, no prompt do R."
+
+- Class: cmd_question
+  Output: "O maior número de visitas está na linha 704 do data frame. Mostre essa linha digitando hits[704,]."
+  CorrectAnswer: hits[704,]
+  AnswerTests: omnitest(correctExpr='hits[704,]')
+  Hint: "Digite \"hits[704,]\" no prompt do R."
+
+- Class: cmd_question
+  Output: "O maior número de visitas, 94, aconteceu em 4 de dezembro de 2012, e 64 delas vieram do blog Simply Statistics. Podemos considerar essas 64 visitas um evento especial, além do normal. Será que a diferença, 94-64=30 visitas, pode ser explicada pelo tráfego normal estimado pelo nosso modelo? Para conferir, precisamos do valor de lambda em 4 de dezembro de 2012. Ele é o elemento 704 de fitted.values do nosso modelo. Extraia mdl$fitted.values[704] e guarde-o numa variável chamada lambda."
+  CorrectAnswer: lambda <- mdl$fitted.values[704]
+  AnswerTests: omnitest(correctExpr='lambda <- mdl$fitted.values[704]');expr_creates_var('lambda')
+  Hint: "Digite \"lambda <- mdl$fitted.values[704]\" no prompt do R."
+
+- Class: cmd_question
+  Output: "O número de visitas explicado pelo nosso modelo em 4 de dezembro de 2012 é o de uma variável aleatória de Poisson com média lambda. Podemos achar o percentil 95 dessa distribuição com qpois(.95, lambda). Faça isso agora."
+  CorrectAnswer: qpois(.95, lambda)
+  AnswerTests: ANY_of_exprs('qpois(.95, lambda)', 'qpois(0.95, lambda)')
+  Hint: "Digite \"qpois(.95, lambda)\" ou \"qpois(0.95, lambda)\" no prompt do R."
+
+- Class: text
+  Output: "Assim, em 95% das vezes veríamos 33 visitas ou menos; portanto, 30 visitas não seriam raras segundo o nosso modelo. Parece que, em 4 de dezembro de 2012, o número muito alto de visitas se deveu aos links do Simply Statistics. (Lembre, porém, que o modelo subestima a variância; com a sobredispersão, o intervalo real seria ainda mais largo.) Para avaliar a importância dos links do Simply Statistics, podemos modelar a proporção do tráfego que eles representam. Isso também vai mostrar o uso do argumento offset de glm para modelar frequências e proporções."
+
+- Class: text
+  Output: "Um processo de Poisson gera contagens, e contagens são números inteiros - 0, 1, 2, 3 etc. Uma proporção é uma fração. Então, como um processo de Poisson pode modelar uma proporção? O truque é incluir o denominador da fração, ou melhor, o log dele, como offset. Lembre que, nos nossos dados, 'simplystats' são as visitas vindas do Simply Statistics, e 'visits' é o total de visitas. Queremos modelar a fração simplystats/visits, mas, para evitar divisão por zero, vamos usar simplystats/(visits+1). Um modelo de Poisson supõe que log(lambda) é uma combinação linear das preditoras. Suponha que log(lambda) = log(visits+1) + b0 + b1*data. Em outras palavras, se exigirmos que o coeficiente de log(visits+1) seja igual a 1, estaremos prevendo o log da média de visitas vindas do Simply Statistics como proporção do total de visitas - log(lambda/(visits+1)) = b0 + b1*data."
+
+- Class: cmd_question
+  Output: "O argumento offset de glm tem exatamente esse efeito - ele fixa em 1 o coeficiente do termo de offset. Para criar um modelo da proporção de visitas vindas do Simply Statistics, usamos offset=log(visits+1). Crie esse modelo de Poisson agora e guarde-o numa variável chamada mdl2."
+  CorrectAnswer: mdl2 <- glm(simplystats ~ date, poisson, hits, offset=log(visits+1))
+  AnswerTests: creates_glm_model('mdl2 <- glm(simplystats ~ date, poisson, hits, offset=log(visits+1))')
+  Hint: "Digite \"mdl2 <- glm(formula = simplystats ~ date, family = poisson, data = hits, offset = log(visits + 1))\", ou algo equivalente, no prompt do R."
+
+- Class: cmd_question
+  Output: "Embora summary(mdl2) mostre que os coeficientes estimados são significativamente diferentes de zero, o modelo não é lá muito bom. Dá para ver por quê olhando de novo o dia 4 de dezembro de 2012. Nesse dia, houve 64 visitas vindas do Simply Statistics. Mas, segundo mdl2, 64 visitas seriam extremamente improváveis. Confirme essa fraqueza do modelo calculando o percentil 95 de mdl2 para esse dia. Lembrando que 4 de dezembro de 2012 é a observação 704, calcule qpois(.95, mdl2$fitted.values[704])."
+  CorrectAnswer: qpois(.95, mdl2$fitted.values[704])
+  AnswerTests: ANY_of_exprs('qpois(.95, mdl2$fitted.values[704])', 'qpois(0.95, mdl2$fitted.values[704])')
+  Hint: "Digite \"qpois(.95, mdl2$fitted.values[704])\" no prompt do R."
+
+- Class: mult_question
+  Output: "Uma distribuição de Poisson com lambda=1000 é bem aproximada por uma distribuição normal. Qual será a variância dessa normal?"
+  AnswerChoices: lambda;lambda ao quadrado;a raiz quadrada de lambda
+  CorrectAnswer: lambda
+  AnswerTests: omnitest(correctVal='lambda')
+  Hint: "A média e a variância de uma distribuição de Poisson são iguais."
+
+- Class: mult_question
+  Output: "Ao modelar respostas de contagem como um processo de Poisson, o que é modelado como combinação linear das preditoras?"
+  AnswerChoices: O log da média;A média;As contagens
+  CorrectAnswer: O log da média
+  AnswerTests: omnitest(correctVal='O log da média')
+  Hint: "Contagens e suas médias nunca são negativas, mas combinações lineares de preditoras podem ser."
+
+- Class: mult_question
+  Output: "Qual argumento da função glm permite incluir uma preditora com coeficiente fixado em 1?"
+  AnswerChoices: offset;data;b0;family;formula
+  CorrectAnswer: offset
+  AnswerTests: omnitest(correctVal='offset')
+  Hint: "Usamos esse argumento para incluir log(visits+1) ao ajustar mdl2."
+
+- Class: text
+  Output: "Isso encerra o exemplo de GLM de Poisson. Obrigado por ter ido até o fim - esperamos que tenha valido a contagem."
+
+- Class: text
+  Output: "Parabéns! Você terminou esta lição sobre Respostas de Contagem e, com ela, o curso Modelos de Regressão."
