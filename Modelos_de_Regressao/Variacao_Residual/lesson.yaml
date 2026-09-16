@@ -1,0 +1,111 @@
+- Class: meta
+  Course: Modelos de Regressão
+  Lesson: Variação Residual
+  Author: Swirl Coders, Diogo B. Provete (Tradução)
+  Type: Standard
+  Organization: Johns Hopkins Bloomberg School of Public Health
+  Version: 2.2.0
+
+- Class: text
+  Output: "Variação Residual. (Os slides desta e de outras disciplinas de Ciência de Dados, em inglês, estão no GitHub, em https://github.com/DataScienceSpecialization/courses. Se quiser usá-los, é preciso baixá-los como arquivo zip e abri-los no seu computador. Esta lição corresponde a Regression_Models/01_06_residualVariation. Os dados de Galton vêm do site de John Verzani, http://wiener.math.csi.cuny.edu/UsingR/)"
+
+- Class: text
+  Output: Como mostrado nos slides, os resíduos ajudam a indicar quão bem os dados se ajustam a um modelo estatístico. Eles "podem ser vistos como a resposta (Y) com a associação linear da preditora (X) removida. Distingue-se a variação residual (a variação que sobra depois de remover a preditora) da variação sistemática (a variação explicada pelo modelo de regressão)."
+
+- Class: text
+  Output: Também se pode mostrar que, dado um modelo, a estimativa de máxima verossimilhança da variância do erro aleatório é a média dos resíduos ao quadrado. No entanto, como nosso modelo linear com uma preditora exige dois parâmetros, temos só (n-2) graus de liberdade. Por isso, para calcular uma "média" dos resíduos ao quadrado que estime a variância, usamos a fórmula 1/(n-2) * (a soma dos resíduos ao quadrado). Se dividíssemos a soma dos resíduos ao quadrado por n, e não por n-2, o resultado seria uma estimativa enviesada.
+
+- Class: cmd_question
+  Output: Para ver isso, vamos usar nossos queridos dados de altura de Galton. Primeiro, gere de novo a linha de regressão e chame-a de fit. Use a função lm do R e lembre que, por padrão, o primeiro argumento é uma fórmula como "child ~ parent" e o segundo é o conjunto de dados, neste caso galton.
+  CorrectAnswer: fit <- lm(child ~ parent, galton)
+  AnswerTests: omnitest(correctExpr='fit <- lm(child ~ parent, galton)')
+  Hint: Digite "fit <- lm(child ~ parent, galton)" no prompt do R.
+
+- Class: text
+  Output: Primeiro, vamos usar os resíduos do nosso modelo (fit$residuals) para estimar o desvio-padrão (sigma) do erro. Já definimos para você n, o número de pontos nos dados de Galton (928).
+
+- Class: cmd_question
+  Output: Calcule a soma dos resíduos ao quadrado dividida por (n-2). Depois, tire a raiz quadrada.
+  CorrectAnswer: sqrt(sum(fit$residuals^2) / (n - 2))
+  AnswerTests: omnitest(correctExpr='sqrt(sum(fit$residuals^2) / (n - 2))')
+  Hint: Digite "sqrt(sum(fit$residuals^2) / (n - 2))" no prompt do R.
+
+- Class: cmd_question
+  Output: Agora veja a parte "sigma" do resumo de fit, "summary(fit)$sigma".
+  CorrectAnswer: summary(fit)$sigma
+  AnswerTests: omnitest(correctExpr='summary(fit)$sigma')
+  Hint: Digite "summary(fit)$sigma" no prompt do R.
+
+- Class: text
+  Output: Legal, não?
+
+- Class: cmd_question
+  Output: Outra coisa legal - digite no prompt do R a raiz quadrada de "deviance(fit)/(n-2)".
+  CorrectAnswer: sqrt(deviance(fit)/(n-2))
+  AnswerTests: omnitest(correctExpr='sqrt(deviance(fit)/(n-2))')
+  Hint: Digite "sqrt(deviance(fit)/(n-2))" no prompt do R.
+
+- Class: text
+  Output: Outro fato útil mostrado nos slides foi
+
+- Class: text
+  Output: Variação Total = Variação Residual + Variação da Regressão
+
+- Class: mult_question
+  Output: Lembre da beleza daquele slide cheio de álgebra que demonstrava esse fato. Ele tinha um monte de Y's, alguns com chapéu e outros com barra, e vários somatórios de valores ao quadrado. Os Y's com chapéu eram as estimativas dadas pelo modelo. (Eles ficavam sobre a linha de regressão.) O Y com barra era a média dos dados. Qual soma de quadrados representava a Variação Total?
+  AnswerChoices: Yi-mean(Yi);Yi-Yi_hat;Yi_hat-mean(Yi)
+  CorrectAnswer: Yi-mean(Yi)
+  AnswerTests: omnitest(correctVal='Yi-mean(Yi)')
+  Hint: Escolha a opção que não depende dos valores estimados ou previstos (os termos com chapéu, "hat").
+
+- Class: mult_question
+  Output: Qual soma de quadrados representa a Variação Residual?
+  AnswerChoices: Yi-Yi_hat;Yi-mean(Yi);Yi_hat-mean(Yi)
+  CorrectAnswer: Yi-Yi_hat
+  AnswerTests: omnitest(correctVal='Yi-Yi_hat')
+  Hint: Os resíduos representam a distância vertical entre os valores reais e os valores estimados (com chapéu).
+
+- Class: text
+  Output: O termo R^2 representa a proporção da variação total descrita pelo modelo, ou seja, a variação da regressão (o termo que não perguntamos nas questões de múltipla escolha anteriores). E, como é uma proporção, precisamos de uma razão entre somas de quadrados. Vamos calculá-la agora com os dados de Galton.
+
+- Class: cmd_question
+  Output: Vamos começar com passos simples. Calcule a média das alturas dos filhos e guarde-a numa variável chamada mu. Lembre que acessamos as alturas dos filhos com a expressão 'galton$child' e as dos pais com 'galton$parent'.
+  CorrectAnswer: mu <- mean(galton$child)
+  AnswerTests: omnitest(correctExpr='mu <- mean(galton$child)')
+  Hint: Digite "mu <- mean(galton$child)" no prompt do R.
+
+- Class: cmd_question
+  Output: Lembre que centralizar dados significa subtrair a média de cada valor. Agora calcule a soma dos quadrados das alturas dos filhos centralizadas e guarde o resultado numa variável chamada sTot. Ela representa a Variação Total dos dados.
+  CorrectAnswer: sTot <- sum((galton$child-mu)^2)
+  AnswerTests: ANY_of_exprs('sTot <- sum((galton$child-mu)^2)','sTot <- sum((galton$child-mu)*(galton$child-mu))')
+  Hint: Digite "sTot <- sum((galton$child-mu)^2)" no prompt do R.
+
+- Class: cmd_question
+  Output: Agora crie a variável sRes. Use a função deviance do R para calcular a soma dos quadrados dos resíduos, as distâncias entre as alturas dos filhos e a linha de regressão. Ela representa a Variação Residual.
+  CorrectAnswer: sRes <- deviance(fit)
+  AnswerTests: omnitest(correctExpr='sRes <- deviance(fit)')
+  Hint: Digite "sRes <- deviance(fit)" no prompt do R.
+
+- Class: cmd_question
+  Output: Por fim, a razão sRes/sTot representa a proporção da variação total que cabe aos resíduos. Para achar a proporção que cabe ao modelo, ou seja, a variação da regressão, subtraia a fração sRes/sTot de 1. Esse é o valor de R^2.
+  CorrectAnswer: 1-sRes/sTot
+  AnswerTests: omnitest(correctExpr='1-sRes/sTot')
+  Hint: Digite "1-sRes/sTot" no prompt do R.
+
+- Class: cmd_question
+  Output: Por curiosidade, compare seu resultado com o valor de summary(fit)$r.squared e veja se ele parece familiar. Faça isso agora.
+  CorrectAnswer: summary(fit)$r.squared
+  AnswerTests: omnitest(correctExpr='summary(fit)$r.squared')
+  Hint: Digite "summary(fit)$r.squared" no prompt do R.
+
+- Class: cmd_question
+  Output: Para ver uma verdadeira mágica, calcule o quadrado da correlação entre as alturas dos filhos e dos pais nos dados de Galton. Use a função cor do R.
+  CorrectAnswer: cor(galton$parent,galton$child)^2
+  AnswerTests: ANY_of_exprs('cor(galton$parent,galton$child)^2','cor(galton$child,galton$parent)^2')
+  Hint: Digite "cor(galton$parent,galton$child)^2" no prompt do R.
+
+- Class: text
+  Output: Vamos agora resumir alguns fatos úteis sobre o R^2. Ele é a proporção da variação explicada pelo modelo de regressão. Como é uma proporção, fica entre 0 e 1. Ele também é igual ao quadrado da correlação amostral. Mas o R^2 não conta a história toda.
+
+- Class: text
+  Output: Parabéns! Você terminou esta lição sobre Variação Residual.

@@ -1,0 +1,111 @@
+- Class: meta
+  Course: Modelos de Regressão
+  Lesson: Introdução
+  Author: Swirl Coders, Diogo B. Provete (Tradução)
+  Type: Standard
+  Organization: Johns Hopkins Bloomberg School of Public Health
+  Version: 2.2.0
+
+- Class: text
+  Output: "Introdução aos Modelos de Regressão. (Os slides desta e de outras disciplinas de Ciência de Dados, em inglês, estão no GitHub, em https://github.com/DataScienceSpecialization/courses, caso queira usá-los. É preciso baixá-los como arquivo zip e abri-los no seu computador. Esta lição corresponde a Regression_Models/01_01_introduction.)"
+
+- Class: text
+  Output: Esta é a primeira lição de Modelos de Regressão. Vamos começar pelo conceito de "regressão à média" e ilustrá-lo com um trabalho pioneiro do pai da ciência forense, Sir Francis Galton.
+
+- Class: text
+  Output: Sir Francis estudou a relação entre a altura dos pais e a dos filhos. Seu trabalho mostrou que pais mais altos que a média tinham filhos também altos, mas mais próximos da altura média. Da mesma forma, pais mais baixos que a média tinham filhos também mais baixos que a média, mas menos do que o pai e a mãe. Ou seja, os filhos ficavam mais próximos da altura média. De uma geração para a outra, as alturas se aproximavam da média, ou regrediam à média.
+
+- Class: text
+  Output: Nesta lição, vamos usar os dados de altura de pais e filhos de Sir Francis, que tomamos a liberdade de carregar para você na variável galton. (Os dados vêm do site de John Verzani, http://wiener.math.csi.cuny.edu/UsingR/.) As alturas estão em polegadas (1 polegada = 2,54 cm). Vamos começar!
+
+- Class: figure
+  Output: Este é um gráfico dos dados de Galton, um conjunto de 928 pares de alturas de pais e filhos. As alturas da mãe e do pai foram combinadas numa média (depois de as alturas das mães serem multiplicadas por 1,08). No gráfico, usamos a função "jitter" do R nas alturas dos filhos para destacar as alturas mais frequentes. As manchas escuras de cada coluna sobem da esquerda para a direita, o que sugere que a altura dos filhos depende da altura dos pais. Pais altos têm filhos altos, e pais baixos têm filhos baixos.
+  Figure: plot1_children_vs_parents.R
+  FigureType: new
+
+- Class: figure
+  Output: Aqui acrescentamos ao gráfico uma linha vermelha (a 45 graus), com inclinação 1 e intercepto 0. Se os filhos tendessem a ter a mesma altura dos pais, esperaríamos que os dados variassem por igual em torno dessa linha. Vemos que não é o caso. Na metade esquerda do gráfico, as alturas se concentram acima da linha e, na metade direita, abaixo dela.
+  Figure: plot2_identity_line.R
+  FigureType: add
+
+- Class: figure
+  Output: Agora acrescentamos ao gráfico uma linha de regressão azul. É a linha em torno da qual os dados têm a menor variação. (Para a teoria, veja os slides.) Sua inclinação é maior que zero, o que indica que a altura dos pais afeta a dos filhos. A inclinação também é menor que 1, valor que teríamos se os filhos tendessem a ter a mesma altura dos pais.
+  Figure: plot3_regression_line.R
+  FigureType: add
+
+- Class: cmd_question
+  Output: Agora é a sua vez de fazer um gráfico no R. Digite "plot(child ~ parent, galton)" no prompt do R.
+  CorrectAnswer: plot(child ~ parent, galton)
+  AnswerTests: omnitest(correctExpr='plot(child ~ parent, galton)')
+  Hint: Digite "plot(child ~ parent, galton)" no prompt do R.
+  Figure: restore_1.R
+  FigureType: new
+
+- Class: text
+  Output: Você vai notar que este gráfico parece bem diferente do original que mostramos. Por quê? Muitas pessoas têm a mesma altura, dentro do erro de medida, e por isso os pontos ficam uns em cima dos outros. Repare que alguns círculos parecem mais escuros que outros. Mas, usando a função "jitter" do R nas alturas dos filhos, podemos espalhar os dados para simular os erros de medida e deixar mais visíveis as alturas mais frequentes.
+
+- Class: cmd_question
+  Output: Agora é a sua vez de tentar. Digite "plot(jitter(child,4) ~ parent,galton)" e veja a mágica acontecer.
+  CorrectAnswer: plot(jitter(child,4) ~ parent,galton)
+  AnswerTests: omnitest(correctExpr='plot(jitter(child,4) ~ parent,galton)')
+  Hint: Você consegue! Digite "plot(jitter(child,4) ~ parent,galton)"
+  Figure: restore_2.R
+  FigureType: new
+
+- Class: text
+  Output: Agora, a linha de regressão. No R, isso é bem fácil. A função lm (de linear model, modelo linear) precisa de uma "fórmula" e de um conjunto de dados. Você pode digitar "?formula" para saber mais mas, de forma simples, basta indicar a variável dependente (altura dos filhos) ~ a variável independente (altura dos pais).
+
+- Class: cmd_question
+  Output: Então gere a linha de regressão e guarde-a na variável regrline. Digite "regrline <- lm(child ~ parent, galton)"
+  CorrectAnswer: regrline <- lm(child ~ parent, galton)
+  AnswerTests: omnitest(correctExpr='regrline <- lm(child ~ parent, galton)');expr_creates_var('regrline')
+  Hint: Você CONSEGUE! Digite "regrline <- lm(child ~ parent, galton)"
+
+- Class: cmd_question
+  Output: Agora acrescente a linha de regressão ao gráfico com "abline". Deixe a linha grossa e vermelha, para ficar bem visível. Digite "abline(regrline, lwd=3, col='red')"
+  CorrectAnswer: abline(regrline, lwd=3, col='red')
+  AnswerTests: omnitest(correctExpr='abline(regrline, lwd=3, col=\'red\')')
+  Hint: Sim, você consegue! Digite "abline(regrline, lwd=3, col='red')"
+  Figure: restore_3.R
+  FigureType: add
+
+- Class: cmd_question
+  Output: A linha de regressão tem uma inclinação e um intercepto, que são estimados a partir dos dados. Estimativas não são exatas. A precisão delas é avaliada por técnicas teóricas e expressa como "erro-padrão". Você pode usar "summary(regrline)" para examinar a linha de regressão de Galton. Faça isso agora.
+  CorrectAnswer: summary(regrline)
+  AnswerTests: omnitest(correctExpr='summary(regrline)')
+  Hint: Esta é fácil. Digite "summary(regrline)"
+
+- Class: mult_question
+  Output: A inclinação da linha é a estimativa do coeficiente, ou multiplicador, de "parent", a variável independente dos nossos dados (neste caso, a altura dos pais). Pela saída de "summary", qual é a inclinação da linha de regressão?
+  AnswerChoices: .64629;.04114;23.94153
+  CorrectAnswer: .64629
+  AnswerTests: omnitest(correctVal= '.64629')
+  Hint: Olhe a linha chamada "parent" e a coluna "Estimate".
+
+- Class: mult_question
+  Output: Qual é o erro-padrão da inclinação?
+  AnswerChoices: .64629;.04114;23.94153
+  CorrectAnswer: .04114
+  AnswerTests: omnitest(correctVal= '.04114')
+  Hint: Olhe a linha chamada "parent" e a coluna "Std. Error".
+
+- Class: text
+  Output: Em cerca de 95% das vezes, um coeficiente fica a menos de 2 erros-padrão da sua estimativa. Isso significa que a inclinação da nossa regressão é significativamente diferente tanto de 0 quanto de 1, já que (.64629) +/- (2*.04114) não fica perto nem de 0 nem de 1.
+
+- Class: figure
+  Output: Agora acrescentamos duas linhas azuis para indicar as médias das alturas dos filhos (horizontal) e dos pais (vertical). Repare que essas linhas e a linha de regressão se cruzam num único ponto. Legal, não? Falaremos mais disso numa lição futura. (Algo para você esperar ansiosamente.)
+  Figure: plot4_mean_heights.R
+  FigureType: add
+
+- Class: figure
+  Output: A inclinação de uma linha mostra quanto uma variação na direção horizontal produz de variação na direção vertical. Assim, pais "1 polegada" acima da média de altura tendem a ter filhos só .65 polegada acima da média. O triângulo verde ilustra isso. A partir da média, andar "1 polegada" na horizontal para a direita (aumentando a altura dos pais) produz um aumento de ".65 polegada" na direção vertical (altura dos filhos).
+  Figure: plot5_triangle1.R
+  FigureType: add
+
+- Class: figure
+  Output: Da mesma forma, pais 1 polegada abaixo da média de altura têm filhos só .65 polegada abaixo da média. O triângulo roxo ilustra isso. A partir da média, andar "1 polegada" na horizontal para a esquerda (diminuindo a altura dos pais) produz uma diminuição de ".65 polegada" na direção vertical (altura dos filhos).
+  Figure: plot5_triangle2.R
+  FigureType: add
+
+- Class: text
+  Output: Assim terminamos nossa lição sobre regressão à média. Esperamos que você a tenha achado acima da média!

@@ -1,0 +1,104 @@
+- Class: meta
+  Course: Modelos de Regressão
+  Lesson: Estimação por Mínimos Quadrados
+  Author: Swirl Coders, Diogo B. Provete (Tradução)
+  Type: Standard
+  Organization: Johns Hopkins Bloomberg School of Public Health
+  Version: 2.2.0
+
+- Class: text
+  Output: "Estimação por Mínimos Quadrados. (Os slides desta e de outras disciplinas de Ciência de Dados, em inglês, estão no GitHub, em https://github.com/DataScienceSpecialization/courses. Se quiser usá-los, é preciso baixá-los como arquivo zip e abri-los no seu computador. Esta lição corresponde a Regression_Models/01_03_ols. Os dados de Galton vêm do site de John Verzani, http://wiener.math.csi.cuny.edu/UsingR/)"
+
+- Class: text
+  Output: Nesta lição, se você estiver usando o RStudio, poderá brincar com parte do código que aparece nos slides. Se não estiver, poderá ler o código, mas não conseguirá experimentar a função "manipulate". Deixamos o código pronto para você examiná-lo sem precisar digitar tudo. No RStudio, quando a janela do editor mostrar o código, confira se o cursor piscante voltou para o console antes de apertar "Enter" ou qualquer tecla; senão, você pode alterar o código sem querer. Se alterar o arquivo, no RStudio, aperte Ctrl z (Cmd z no Mac) no editor até desfazer todas as mudanças indesejadas. Em outros editores, use a combinação de teclas de "desfazer".
+
+- Class: figure
+  Output: Aqui estão os dados de Galton e a linha de regressão vistos na Introdução. A linha de regressão resume a relação entre a altura dos pais (as preditoras) e a dos filhos (as respostas).
+  Figure: plot1.R
+  FigureType: new
+
+- Class: text
+  Output: Vimos na lição anterior que a linha de regressão é a linha que passa pelos dados com o menor (mínimo) "erro" ao quadrado, a distância vertical entre as 928 alturas reais dos filhos e as alturas previstas pela linha. Elevar as distâncias ao quadrado garante que pontos acima e abaixo da linha sejam tratados da mesma forma. Esse método de escolher a 'melhor' linha de regressão (ou de 'ajustar' uma linha aos dados) se chama mínimos quadrados ordinários.
+
+- Class: figure
+  Output: Como mostrado nos slides, a linha de regressão contém o ponto que representa as médias dos dois conjuntos de alturas. As médias aparecem como as linhas finas horizontal e vertical. O ponto de encontro é o triângulo no gráfico. Sua coordenada x é a média das alturas dos pais e a coordenada y é a média das alturas dos filhos.
+  Figure: meanpt.R
+  FigureType: add
+
+- Class: text
+  Output: Como mostrado nos slides, a inclinação da linha de regressão é a correlação entre os dois conjuntos de alturas multiplicada pela razão dos desvios-padrão (dos filhos pelo dos pais, ou das respostas pelo das preditoras).
+
+- Class: figure
+  Output: Aqui mostramos um código que demonstra como mudar a inclinação da linha de regressão afeta o erro quadrático médio entre os valores reais e os previstos. Dê uma olhada para ver como ele é simples.
+  Figure: demofile.R
+  FigureType: new
+
+- Class: mult_question
+  Output: Qual pacote gráfico do RStudio permite brincar com os dados para ver o efeito das mudanças?
+  AnswerChoices: manipulate;plot;abline;points
+  CorrectAnswer: manipulate
+  AnswerTests: omnitest(correctVal='manipulate')
+  Hint: Três das quatro opções servem para desenhar gráficos.
+
+- Class: figure
+  Output: Agora você pode mesmo brincar com o código, usando a função manipulate do R para encontrar o menor erro quadrático. Ajuste o controle deslizante com o botão esquerdo do mouse ou use as setas para a direita e para a esquerda e veja como mudar a inclinação (beta) afeta o erro quadrático médio (mse). Se o controle sumir, você pode trazê-lo de volta clicando na pequena engrenagem no canto superior esquerdo da janela do gráfico.
+  Figure: sourceit.R
+  FigureType: new
+
+- Class: mult_question
+  Output: Qual valor da inclinação minimiza o erro quadrático médio?
+  AnswerChoices: .64;.44;.70;5
+  CorrectAnswer: .64
+  AnswerTests: omnitest(correctVal='.64')
+  Hint: Se você ordenar as opções da menor para a maior, escolha uma das duas do meio.
+
+- Class: mult_question
+  Output: Qual foi o menor mse?
+  AnswerChoices: 5.0;.64;44;.66
+  CorrectAnswer: 5.0
+  AnswerTests: omnitest(correctVal='5.0')
+  Hint: Você não quer um erro nem grande demais nem pequeno demais.
+
+- Class: text
+  Output: Lembre que normalizar dados é subtrair a média e dividir pelo desvio-padrão. Fizemos isso para você com as alturas dos filhos e dos pais de galton. Guardamos os valores normalizados em dois vetores, gpa_nor e gch_nor, os dados normalizados dos pais e dos filhos de galton.
+
+- Class: cmd_question
+  Output: Use a função "cor" do R para calcular a correlação entre esses dois conjuntos de dados normalizados.
+  CorrectAnswer: cor(gpa_nor,gch_nor)
+  AnswerTests: ANY_of_exprs('cor(gpa_nor,gch_nor)','cor(gch_nor,gpa_nor)')
+  Hint: Digite "cor(gpa_nor,gch_nor)" no prompt do R.
+
+- Class: mult_question
+  Output: Como essa correlação se compara à correlação dos dados não normalizados?
+  AnswerChoices: É igual.;É maior.;É menor.
+  CorrectAnswer: É igual.
+  AnswerTests: omnitest(correctVal='É igual.')
+  Hint: Você mudou mesmo alguma coisa?
+
+- Class: cmd_question
+  Output: Use a função "lm" do R para gerar a linha de regressão com esses dados normalizados. Guarde-a numa variável chamada l_nor. Use a altura dos pais como preditora (variável independente) e a dos filhos como resposta (variável dependente). Lembre que 'lm' precisa de uma fórmula na forma dependente ~ independente. Como os vetores de dados já foram criados para você, não é preciso passar um segundo argumento "data", como antes.
+  CorrectAnswer: l_nor <- lm(gch_nor ~ gpa_nor)
+  AnswerTests: omnitest(correctExpr='l_nor <- lm(gch_nor ~ gpa_nor)')
+  Hint: Digite "l_nor <- lm(gch_nor ~ gpa_nor)" no prompt do R.
+
+- Class: mult_question
+  Output: Qual é a inclinação dessa linha?
+  AnswerChoices: A correlação entre os 2 conjuntos de dados;Não faço ideia;1.
+  CorrectAnswer: A correlação entre os 2 conjuntos de dados
+  AnswerTests: omnitest(correctVal='A correlação entre os 2 conjuntos de dados')
+  Hint: Pense na correlação.
+
+- Class: mult_question
+  Output: Se você trocasse a resposta (Y) e a preditora (X) dos dados originais (não normalizados), usando por exemplo a altura dos filhos para prever a dos pais, qual seria a inclinação da nova linha de regressão?
+  AnswerChoices: correlation(X,Y) * sd(X)/sd(Y);a mesma da original;Não faço ideia;1.
+  CorrectAnswer: correlation(X,Y) * sd(X)/sd(Y)
+  AnswerTests: omnitest(correctVal='correlation(X,Y) * sd(X)/sd(Y)')
+  Hint: Como você está trocando X e Y, troque X e Y na fórmula. Trocar X e Y dentro da correlação não muda nada.
+
+- Class: figure
+  Output: Vamos terminar com um último código dos slides. Ele desenha os dados de Galton com três linhas de regressão - a original, em vermelho, com os filhos como resposta; uma nova linha azul, com os pais como resposta e os filhos como preditora; e uma linha preta com a inclinação ajustada para ser igual à razão dos desvios-padrão.
+  Figure: demofile2.R
+  FigureType: new
+
+- Class: text
+  Output: Parabéns! Você concluiu esta lição sobre mínimos quadrados ordinários, que de ordinários não têm nada!

@@ -1,0 +1,161 @@
+- Class: meta
+  Course: Modelos de Regressão
+  Lesson: Resíduos
+  Author: Swirl Coders, Diogo B. Provete (Tradução)
+  Type: Standard
+  Organization: Johns Hopkins Bloomberg School of Public Health
+  Version: 2.2.0
+
+- Class: text
+  Output: "Resíduos. (Os slides desta e de outras disciplinas de Ciência de Dados, em inglês, estão no GitHub, em https://github.com/DataScienceSpecialization/courses. Se quiser usá-los, é preciso baixá-los como arquivo zip e abri-los no seu computador. Esta lição corresponde a Regression_Models/01_03_ols. Os dados de Galton vêm do site de John Verzani, http://wiener.math.csi.cuny.edu/UsingR/)"
+
+- Class: text
+  Output: Esta lição trata dos resíduos, as distâncias entre as alturas reais dos filhos e as estimativas dadas pela linha de regressão. Como toda linha é definida por dois parâmetros, uma inclinação e um intercepto, vamos usar o critério de mínimos quadrados para obter duas equações com duas incógnitas e assim encontrar esses parâmetros, a inclinação e o intercepto.
+
+- Class: text
+  Output: A primeira equação diz que os "erros" das nossas estimativas, os resíduos, têm média zero. Em outras palavras, os resíduos estão "equilibrados" entre os pontos; é tão provável que sejam positivos quanto negativos. A segunda equação diz que os resíduos não podem ser correlacionados com as preditoras, aqui a altura dos pais. Isso faz sentido - se os resíduos e as preditoras fossem correlacionados, seria possível fazer uma previsão melhor e reduzir as distâncias (resíduos) entre os valores observados e os previstos.
+
+- Class: cmd_question
+  Output: Vamos demonstrar esses conceitos agora. Primeiro, gere de novo a linha de regressão e chame-a de fit. Use a função lm do R. Lembre que, por padrão, o primeiro argumento é uma fórmula como "child ~ parent" e o segundo é o conjunto de dados, neste caso galton.
+  CorrectAnswer: fit <- lm(child ~ parent, galton)
+  AnswerTests: creates_lm_model('fit <- lm(child ~ parent, galton)')
+  Hint: Digite "fit <- lm(child ~ parent, galton)" no prompt do R.
+
+- Class: cmd_question
+  Output: Agora vamos examinar fit para ver a inclinação e o intercepto. Os resíduos que nos interessam estão guardados em fit$residuals, um vetor de comprimento 928. Se você digitar fit$residuals, vai ver muitos números passarem pela tela, o que não ajuda muito; mas, se digitar "summary(fit)", verá um resumo mais conciso da regressão. Faça isso agora.
+  CorrectAnswer: summary(fit)
+  AnswerTests: omnitest(correctExpr='summary(fit)')
+  Hint: Digite "summary(fit)" no prompt do R.
+
+- Class: cmd_question
+  Output: Primeiro, calcule a média de fit$residuals para ver se ela é próxima de 0.
+  CorrectAnswer: mean(fit$residuals)
+  AnswerTests: omnitest(correctExpr='mean(fit$residuals)')
+  Hint: Digite "mean(fit$residuals)" no prompt do R.
+
+- Class: cmd_question
+  Output: Agora verifique a relação entre os resíduos e a preditora. Digite "cov(fit$residuals, galton$parent)" para ver se a covariância é próxima de 0.
+  CorrectAnswer: cov(fit$residuals,galton$parent)
+  AnswerTests: ANY_of_exprs('cov(fit$residuals,galton$parent)','cov(galton$parent,fit$residuals)')
+  Hint: Digite "cov(fit$residuals, galton$parent)" no prompt do R.
+
+- Class: text
+  Output: Como mostrado algebricamente nos slides, as equações do intercepto e da inclinação são obtidas supondo que se faça uma alteração no intercepto e na inclinação. Elevando ao quadrado as expressões resultantes, chega-se a três somatórios. O primeiro é o termo original ao quadrado, antes de mudar a inclinação e o intercepto. O terceiro soma as próprias alterações ao quadrado. Por exemplo, se tivéssemos somado 2 ao intercepto de fit, o terceiro somatório seria a soma de 928 vezes 4. O somatório do meio é garantidamente zero exatamente quando as duas equações (as condições sobre os resíduos) são satisfeitas.
+
+- Class: text
+  Output: Vamos verificar essas afirmações agora. Definimos para você duas funções no R, est e sqe. As duas recebem dois valores, uma inclinação e um intercepto. A função est calcula a altura de um filho (coordenada y) usando a linha definida pelos dois parâmetros (inclinação e intercepto) e as alturas dos pais nos dados de Galton como coordenadas x.
+
+- Class: mult_question
+  Output: Seja "mch" a média das alturas dos filhos e "mph" a média das alturas dos pais nos dados de Galton. Sejam "ic" e "slope" o intercepto e a inclinação da linha de regressão, respectivamente. Como mostrado nos slides e nas lições anteriores, o ponto (mph,mch) está sobre a linha de regressão. Isso significa que
+  AnswerChoices: mch = ic + slope*mph;mph = ic + slope*mch;Não faço a menor ideia.
+  CorrectAnswer: mch = ic + slope*mph
+  AnswerTests: omnitest(correctVal='mch = ic + slope*mph')
+  Hint: Uma linha é o conjunto de todos os pontos (x,y) que satisfazem a equação y = mx + b, em que m é a inclinação da linha e b é o intercepto. Lembre que o ponto (mph,mch) está sobre a linha de regressão com intercepto ic e inclinação "slope".
+
+- Class: text
+  Output: A função sqe calcula a soma dos resíduos ao quadrado, as diferenças entre as alturas reais dos filhos e as alturas estimadas pela linha definida pelos parâmetros dados (inclinação e intercepto). O R tem a função deviance, que faz exatamente isso a partir de um modelo ajustado (por exemplo, fit). Mesmo assim, oferecemos sqe porque vamos usá-la para testar linhas de regressão diferentes de fit.
+
+- Class: text
+  Output: Vamos ver que, quando alteramos ou ajustamos um pouco a inclinação e o intercepto da linha de regressão, guardados em fit$coef, a soma dos resíduos ao quadrado resultante é aproximadamente igual à soma de duas somas de quadrados - a dos resíduos da regressão original e a das próprias alterações. Mais precisamente, a menos de erro numérico,
+
+- Class: text
+  Output: sqe(ols.slope+sl,ols.intercept+ic) == deviance(fit) + sum(est(sl,ic)^2 )
+
+- Class: text
+  Output: Ou, de forma equivalente, sqe(ols.slope+sl,ols.intercept+ic) == sqe(ols.slope, ols.intercept) + sum(est(sl,ic)^2 )
+
+- Class: text
+  Output: O lado esquerdo da equação representa os resíduos ao quadrado de uma nova linha, a linha de regressão "alterada". Os termos "sl" e "ic" representam as alterações na inclinação e no intercepto, respectivamente. O lado direito tem dois termos. O primeiro representa os resíduos ao quadrado da linha de regressão original, e o segundo é a soma dos quadrados das próprias alterações.
+
+- Class: cmd_question
+  Output: Vamos demonstrar isso agora. Primeiro, extraia o intercepto de fit$coef e guarde-o numa variável chamada ols.ic . O intercepto é o primeiro elemento do vetor fit$coef, ou seja, fit$coef[1].
+  CorrectAnswer: ols.ic <- fit$coef[1]
+  AnswerTests: omnitest(correctExpr='ols.ic <- fit$coef[1]')
+  Hint: Digite "ols.ic <- fit$coef[1]" no prompt do R.
+
+- Class: cmd_question
+  Output: Agora extraia a inclinação de fit$coef e guarde-a na variável ols.slope; a inclinação é o segundo elemento do vetor fit$coef, fit$coef[2].
+  CorrectAnswer: ols.slope <- fit$coef[2]
+  AnswerTests: omnitest(correctExpr='ols.slope <- fit$coef[2]')
+  Hint: Digite "ols.slope <- fit$coef[2]" no prompt do R.
+
+- Class: figure
+  Output: Agora vamos mostrar um código em R que gera o lado esquerdo e o lado direito dessa equação. Dedique um momento para lê-lo. Criamos dois vetores de alterações, cada um com 6 valores, um para a inclinação e outro para o intercepto. Depois, dois laços "for" geram os dois lados da equação.
+  Figure: demofile.R
+  FigureType: new
+
+- Class: cmd_question
+  Output: Subtraia o lado direito, o vetor rhs, do lado esquerdo, o vetor lhs, para ver a relação entre eles. Você deve obter um vetor de números muito pequenos, quase 0.
+  CorrectAnswer: lhs-rhs
+  AnswerTests: omnitest(correctExpr='lhs-rhs')
+  Hint: Digite "lhs-rhs" no prompt do R.
+
+- Class: cmd_question
+  Output: Você também pode usar a função all.equal do R, com lhs e rhs como argumentos, para testar a igualdade. Experimente agora.
+  CorrectAnswer: all.equal(lhs,rhs)
+  AnswerTests: ANY_of_exprs('all.equal(lhs,rhs)','all.equal(rhs,lhs)')
+  Hint: Digite "all.equal(lhs,rhs)" no prompt do R.
+
+- Class: cmd_question
+  Output: Agora vamos mostrar que a variância das alturas dos filhos é a soma da variância das estimativas de mínimos quadrados (OLS) e da variância dos resíduos. Primeiro, use a função var do R para calcular a variância das alturas dos filhos e guarde-a na variável varChild.
+  CorrectAnswer: varChild <- var(galton$child)
+  AnswerTests: omnitest(correctExpr='varChild <- var(galton$child)')
+  Hint: Digite "varChild <- var(galton$child)" no prompt do R.
+
+- Class: cmd_question
+  Output: Lembre que já calculamos os resíduos e eles estão guardados em fit$residuals. Use a função var do R para calcular agora a variância desses resíduos e guarde-a na variável varRes.
+  CorrectAnswer: varRes <- var(fit$residuals)
+  AnswerTests: omnitest(correctExpr='varRes <- var(fit$residuals)')
+  Hint: Digite "varRes <- var(fit$residuals)" no prompt do R.
+
+- Class: cmd_question
+  Output: Lembre que a função "est" calcula as estimativas (coordenadas y) ao longo da linha de regressão definida pelas variáveis "ols.slope" e "ols.ic". Calcule a variância das estimativas e guarde-a na variável varEst.
+  CorrectAnswer: varEst <- var(est(ols.slope, ols.ic))
+  AnswerTests: omnitest(correctExpr='varEst <- var(est(ols.slope, ols.ic))')
+  Hint: Digite "varEst <- var(est(ols.slope, ols.ic))" no prompt do R.
+
+- Class: cmd_question
+  Output: Agora use a função all.equal para comparar varChild com a soma de varRes e varEst.
+  CorrectAnswer: all.equal(varChild,varEst+varRes)
+  AnswerTests: ANY_of_exprs('all.equal(varChild,varEst+varRes)','all.equal(varEst+varRes,varChild)','all.equal(varChild,varRes+varEst)','all.equal(varRes+varEst,varChild)')
+  Hint: Digite "all.equal(varChild,varEst+varRes)" no prompt do R.
+
+- Class: text
+  Output: Como variâncias são somas de quadrados (e, portanto, sempre positivas), a equação que acabamos de demonstrar, var(dados)=var(estimativa)+var(resíduos), mostra que a variância da estimativa é SEMPRE menor que a variância dos dados.
+
+- Class: mult_question
+  Output: Como var(dados)=var(estimativa)+var(resíduos) e variâncias são sempre positivas, a variância dos resíduos
+  AnswerChoices: é menor que a variância dos dados;é maior que a variância dos dados;não pode ser conhecida sem os dados
+  CorrectAnswer: é menor que a variância dos dados
+  AnswerTests: omnitest(correctVal='é menor que a variância dos dados')
+  Hint: A equação diz que var(resíduos)=var(dados)-var(estimativa); estamos subtraindo um número positivo de var(dados) para obter var(resíduos).
+
+- Class: text
+  Output: As duas propriedades dos resíduos que destacamos aqui valem também para conjuntos de dados com várias preditoras. Nesta lição, carregamos o conjunto de dados attenu, com dados de 23 terremotos na Califórnia. As acelerações são estimadas a partir de duas preditoras, distância e magnitude.
+
+- Class: cmd_question
+  Output: Gere a linha de regressão para esses dados. Digite efit <- lm(accel ~ mag+dist, attenu) no prompt do R.
+  CorrectAnswer: efit <- lm(accel ~ mag+dist, attenu)
+  AnswerTests: creates_lm_model('efit <- lm(accel ~ mag+dist, attenu)')
+  Hint: Digite "efit <- lm(accel ~ mag+dist, attenu)" no prompt do R.
+
+- Class: cmd_question
+  Output: Verifique se a média dos resíduos é 0.
+  CorrectAnswer: mean(efit$residuals)
+  AnswerTests: omnitest(correctExpr='mean(efit$residuals)')
+  Hint: Digite "mean(efit$residuals)" no prompt do R.
+
+- Class: cmd_question
+  Output: Usando a função cov do R, verifique se os resíduos não são correlacionados com a preditora de magnitude, attenu$mag.
+  CorrectAnswer: cov(efit$residuals, attenu$mag)
+  AnswerTests: ANY_of_exprs('cov(efit$residuals, attenu$mag)','cov(attenu$mag,efit$residuals)')
+  Hint: Digite "cov(efit$residuals, attenu$mag)" no prompt do R.
+
+- Class: cmd_question
+  Output: Usando a função cov do R, verifique se os resíduos não são correlacionados com a preditora de distância, attenu$dist.
+  CorrectAnswer: cov(efit$residuals, attenu$dist)
+  AnswerTests: ANY_of_exprs('cov(efit$residuals, attenu$dist)','cov(attenu$dist,efit$residuals)')
+  Hint: Digite "cov(efit$residuals, attenu$dist)" no prompt do R.
+
+- Class: text
+  Output: Parabéns! Você terminou a lição sobre Resíduos. Esperamos que ela não tenha deixado nenhum resíduo de dúvida.
