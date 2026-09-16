@@ -1,0 +1,143 @@
+- Class: meta
+  Course: Modelos de Regressão
+  Lesson: Introdução à Regressão Múltipla
+  Author: Swirl Coders, Diogo B. Provete (Tradução)
+  Type: Standard
+  Organization: Johns Hopkins Bloomberg School of Public Health
+  Version: 2.2.0
+
+- Class: text
+  Output: "Introdução à Regressão Múltipla. (Os slides desta e de outras disciplinas de Ciência de Dados, em inglês, estão no GitHub, em https://github.com/DataScienceSpecialization/courses. Se quiser usá-los, é preciso baixá-los como arquivo zip e abri-los no seu computador. Esta lição corresponde a Regression_Models/02_01_multivariate. Os dados de Galton vêm do site Using R, de John Verzani, http://wiener.math.csi.cuny.edu/UsingR/)"
+
+- Class: text
+  Output: "Nesta lição, vamos mostrar que a regressão com muitas variáveis equivale a uma série de regressões com uma só. Usando regressão com uma variável, vamos mostrar como eliminar qualquer preditora escolhida, reduzindo assim uma regressão com N variáveis a uma regressão com N-1. Portanto, se sabemos fazer uma regressão com 1 variável, sabemos fazer com 2. Sabendo fazer com 2 variáveis, sabemos fazer com 3, e assim por diante. Começamos com os dados de galton e uma revisão de como eliminar o intercepto subtraindo as médias."
+
+- Class: text
+  Output: "Quando fazemos uma regressão com uma variável, como lm(child ~ parent, galton), obtemos dois coeficientes, uma inclinação e um intercepto. O intercepto é, na verdade, o coeficiente de uma preditora especial, que tem o mesmo valor, 1, em todas as observações. A função lm inclui essa preditora por padrão."
+
+- Class: cmd_question
+  Output: "Vamos demonstrar isso substituindo-a por uma preditora só de uns, criada por nós. Ela precisa ter o mesmo número de observações de galton (928). Crie esse objeto e chame-o de ones, usando ones <- rep(1, nrow(galton)) ou alguma expressão equivalente."
+  CorrectAnswer: ones <- rep(1, nrow(galton))
+  AnswerTests: calculates_same_value('ones <- rep(1, nrow(galton))');expr_creates_var('ones')
+  Hint: "Digitar ones <- rep(1, nrow(galton)) no prompt do R é um jeito simples de criar um vetor de 1's com exatamente o mesmo número de observações dos dados de galton."
+
+- Class: cmd_question
+  Output: "Os dados de galton já foram carregados. O intercepto padrão pode ser excluído usando -1 na fórmula. Faça uma regressão que troca o intercepto padrão pela nossa preditora, ones, usando lm(child ~ ones + parent -1, galton). Como queremos que o resultado seja impresso, não o atribua a uma variável."
+  CorrectAnswer: lm(child ~ ones + parent - 1, galton)
+  AnswerTests: creates_lm_model('lm(child ~ ones + parent - 1, galton)');!expr_is_a("<-")
+  Hint: "Digite lm(child ~ ones + parent - 1, galton) no prompt do R. Não atribua o resultado a uma variável."
+
+- Class: cmd_question
+  Output: "O coeficiente de ones é 23.9415. Agora use o modelo padrão, lm(child ~ parent, galton), para mostrar que o intercepto tem o mesmo valor. Desta vez, NÃO suprima o intercepto com -1."
+  CorrectAnswer: lm(child ~ parent, galton)
+  AnswerTests: creates_lm_model('lm(child ~ parent, galton)');!expr_is_a("<-")
+  Hint: "O mais fácil é digitar lm(child ~ parent, galton) no prompt do R. Não atribua o resultado a uma variável."
+
+- Class: mult_question
+  Output: "A regressão com uma variável dada por lm(child ~ parent, galton) na verdade envolve duas preditoras: a variável parent e uma preditora só de uns."
+  AnswerChoices: Verdadeiro;Falso
+  CorrectAnswer: Verdadeiro
+  AnswerTests: omnitest(correctVal= 'Verdadeiro')
+  Hint: "Como ela produz dois coeficientes, precisa envolver duas preditoras. Uma é a variável chamada parent, e a outra é a constante, 1."
+
+- Class: figure
+  Output: "Em lições anteriores, mostramos que a linha de regressão dada por lm(child ~ parent, galton) passa pelo ponto x=mean(parent), y=mean(child). Também mostramos que, se subtrairmos a média de cada variável, a linha de regressão passa pela origem, x=0, y=0, e por isso seu intercepto é zero. Assim, ao subtrair as médias, eliminamos uma das duas preditoras, a constante, e sobra só uma, parent. O coeficiente da preditora que sobra é a inclinação."
+  Figure: eliminates_intercept.R
+  FigureType: new
+
+- Class: text
+  Output: "Subtrair as médias para eliminar o intercepto é um caso especial de uma técnica geral que às vezes é chamada de eliminação gaussiana. Aplicada aqui, a técnica geral consiste em escolher uma preditora e substituir todas as outras variáveis pelos resíduos de suas regressões contra essa preditora."
+
+- Class: mult_question
+  Output: "Suponha, como afirmado, que subtrair a média de uma variável seja um caso especial de substituir a variável por um resíduo. Nesse caso especial, seria o resíduo de uma regressão contra o quê?"
+  AnswerChoices: A constante, 1;A própria variável;A resposta
+  CorrectAnswer: A constante, 1
+  AnswerTests: omnitest(correctVal= 'A constante, 1')
+  Hint: "Um resíduo é a diferença entre uma variável e seu valor previsto. Se, por exemplo, child-mean(child) é um resíduo, então mean(child) deve ser seu valor previsto. Mas mean(child) é uma constante, então a preditora seria uma constante."
+
+- Class: cmd_question
+  Output: "A média de uma variável é o coeficiente da sua regressão contra a constante, 1. Assim, subtrair a média equivale a substituir a variável pelo resíduo da sua regressão contra 1. Numa fórmula do R, a preditora constante pode ser representada por um 1 do lado direito. Então, a expressão lm(child ~ 1, galton) faz a regressão de child contra a constante, 1. Lembre que, nos dados de galton, a altura média dos filhos era 68.09 polegadas. Use lm(child ~ 1, galton) para comparar o coeficiente resultante (o intercepto) com a altura média de 68.09. Como queremos que o resultado seja impresso, não dê um nome a ele."
+  CorrectAnswer: lm(child ~ 1, galton)
+  AnswerTests: creates_lm_model('lm(child ~ 1, galton)');!expr_is_a('<-')
+  Hint: "Digite lm(child ~ 1, galton) no prompt do R. Não use o operador de atribuição, <-."
+
+- Class: mult_question
+  Output: "A média de uma variável é igual à sua regressão contra a constante, 1."
+  AnswerChoices: Verdadeiro;Falso
+  CorrectAnswer: Verdadeiro
+  AnswerTests: omnitest(correctVal= 'Verdadeiro')
+  Hint: "A média é o número que minimiza a soma das diferenças ao quadrado entre ele e a variável."
+
+- Class: cmd_question
+  Output: "Para ilustrar o caso geral, vamos usar os dados trees, do pacote datasets. A ideia é prever o volume de madeira (Volume) que uma árvore pode render a partir das medidas de altura (Height) e circunferência do tronco (Girth). Para não tratar o intercepto como caso especial, acrescentamos aos dados uma coluna de 1's, que usaremos no lugar dele. Dedique um momento para examinar os dados, usando View(trees) ou head(trees)."
+  CorrectAnswer: head(trees)
+  AnswerTests: ANY_of_exprs('View(trees)', 'head(trees)', 'trees', 'print(trees)')
+  Hint: Digite head(trees) ou View(trees) no prompt do R.
+
+- Class: text
+  Output: "Um arquivo com o código que vamos usar foi copiado para o seu diretório de trabalho e executado. O arquivo, elimination.R, deve ter aparecido no seu editor. Se não apareceu, abra-o manualmente."
+
+- Class: mult_question
+  Output: "A técnica geral é escolher uma preditora e substituir todas as outras variáveis pelos resíduos de suas regressões contra ela. A função regressOneOnOne, em elimination.R, faz o primeiro passo desse processo. Dado o nome de uma preditora (predictor) e o de outra variável (other), ela devolve o resíduo de other quando regredida contra predictor. Na primeira linha, marcada como Ponto A, ela cria uma fórmula. Suponha que predictor seja 'Girth' e other seja 'Volume'. Que fórmula ela criaria?"
+  AnswerChoices: Volume ~ Girth - 1;Girth ~ Volume - 1;Volume ~ Girth
+  CorrectAnswer: Volume ~ Girth - 1
+  AnswerTests: omnitest(correctVal= 'Volume ~ Girth - 1')
+  Hint: "A fórmula faria a regressão de Volume contra a única preditora, Girth, suprimindo o intercepto padrão com a convenção - 1."
+
+- Class: text
+  Output: "A outra função, eliminate, aplica regressOneOnOne a todas as variáveis, exceto a preditora indicada, e reúne os resíduos num data frame. Primeiro, vamos mostrar que, quando eliminamos uma preditora dos dados, uma regressão com as que sobram produz os coeficientes corretos delas. (É claro que o coeficiente da preditora eliminada vai faltar, mas falaremos disso adiante.)"
+
+- Class: cmd_question
+  Output: "Como referência, crie um modelo com as três preditoras, Girth, Height e Constant, e atribua o resultado a uma variável chamada fit. Use uma expressão como fit <- lm(Volume ~ Girth + Height + Constant -1, trees). Não esqueça o -1, e dê ao modelo o nome fit, para usá-lo depois."
+  CorrectAnswer: fit <- lm(Volume ~ . - 1, trees)
+  AnswerTests: creates_lm_model('fit <- lm(Volume ~ . - 1, trees)')
+  Hint: "Digite uma expressão como fit <- lm(Volume ~ Girth + Height + Constant - 1, trees) ou fit <- lm(Volume ~ . -1, trees) no prompt do R."
+
+- Class: cmd_question
+  Output: "Agora vamos eliminar Girth do conjunto de dados. Chame o conjunto reduzido de trees2, para indicar que ele tem só 2 preditoras. Use a expressão trees2 <- eliminate(\"Girth\", trees)."
+  CorrectAnswer: 'trees2 <- eliminate("Girth", trees)'
+  AnswerTests: ANY_of_exprs('trees2 <- eliminate("Girth", trees)', "trees2 <- eliminate('Girth', trees)");expr_creates_var("trees2")
+  Hint: Digite trees2 <- eliminate("Girth", trees) no prompt do R.
+
+- Class: cmd_question
+  Output: "Use head(trees2) ou View(trees2) para examinar o conjunto de dados reduzido."
+  CorrectAnswer: head(trees2)
+  AnswerTests: ANY_of_exprs('head(trees2)', 'View(trees2)', 'trees2')
+  Hint: "Digite head(trees2) ou View(trees2) no prompt do R."
+
+- Class: mult_question
+  Output: "Por que, em trees2, a coluna Constant não é constante?"
+  AnswerChoices: "A constante, 1, foi substituída pelo seu resíduo na regressão contra Girth.;Deve haver algum erro;A precisão numérica não foi suficiente."
+  CorrectAnswer: A constante, 1, foi substituída pelo seu resíduo na regressão contra Girth.
+  AnswerTests: omnitest(correctVal= 'A constante, 1, foi substituída pelo seu resíduo na regressão contra Girth.')
+  Hint: "Cada uma das colunas, Volume, Height e Constant, foi substituída pelo resíduo da sua regressão contra Girth. Como Girth não é constante, o resíduo de lm(Constant ~ Girth -1, trees) também não será."
+
+- Class: cmd_question
+  Output: "Agora crie um modelo chamado fit2 com o conjunto de dados reduzido. Use uma expressão como fit2 <- lm(Volume ~ Height + Constant -1, trees2). Não esqueça de usar -1 na fórmula."
+  CorrectAnswer: fit2 <- lm(Volume ~ . - 1, trees2)
+  AnswerTests: creates_lm_model('fit2 <- lm(Volume ~ . - 1, trees2)')
+  Hint: "Digite uma expressão como fit2 <- lm(Volume ~ Height + Constant -1, trees2) ou fit2 <- lm(Volume ~ . - 1, trees2). Não esqueça de usar -1 na fórmula e de chamar o modelo de fit2."
+
+- Class: cmd_question
+  Output: "Use a expressão lapply(list(fit, fit2), coef) para imprimir os coeficientes de fit e fit2 e compará-los."
+  CorrectAnswer: lapply(list(fit, fit2), coef)
+  AnswerTests: ANY_of_exprs('lapply(list(fit, fit2), coef)', 'lapply(list(fit2, fit), coef)')
+  Hint: "Digite lapply(list(fit, fit2), coef) no prompt do R."
+
+- Class: text
+  Output: "O coeficiente da variável eliminada falta, é claro. Um jeito de obtê-lo seria voltar aos dados originais, trees, eliminar outra preditora, como Height, e fazer outra regressão com 2 variáveis, como acima. Há jeitos bem mais eficientes, mas eficiência não é o objetivo desta demonstração. Mostramos como reduzir uma regressão com 3 variáveis a uma regressão com 2. Podemos ir além e eliminar mais uma variável, reduzindo uma regressão com 2 variáveis a uma regressão com 1."
+
+- Class: figure
+  Output: "Este é o passo final. Usamos eliminate(\"Height\", trees2) para reduzir os dados à resposta, Volume, e à preditora Constant. Fizemos a regressão de Volume contra Constant e imprimimos o coeficiente, como mostra o comando acima da resposta. Como você pode ver, o coeficiente de Constant bate com os valores anteriores."
+  Figure: trees3.R
+  FigureType: new
+
+- Class: mult_question
+  Output: "Suponha que tenhamos um problema de regressão múltipla com uma resposta e N preditoras, com N > 1. Usando só regressão com uma variável, como o problema pode ser reduzido a um problema com N-1 preditoras?"
+  AnswerChoices: "Escolher uma preditora qualquer e substituir a resposta e todas as outras preditoras pelos seus resíduos contra a preditora escolhida.;Subtrair a média da resposta e de cada preditora."
+  CorrectAnswer: "Escolher uma preditora qualquer e substituir a resposta e todas as outras preditoras pelos seus resíduos contra a preditora escolhida."
+  AnswerTests: omnitest(correctVal= 'Escolher uma preditora qualquer e substituir a resposta e todas as outras preditoras pelos seus resíduos contra a preditora escolhida.')
+  Hint: "Subtrair a média é um caso especial, que vale só para a preditora constante. Nem todo problema tem uma preditora constante."
+
+- Class: text
+  Output: "Mostramos que a regressão com muitas variáveis equivale a uma série de regressões com uma só. Os algoritmos usados de fato por funções como lm são mais eficientes, mas computacionalmente equivalentes ao que fizemos. Ou seja, eles usam passos equivalentes, só que combinados de forma mais eficiente e abstrata. Assim terminamos a lição."

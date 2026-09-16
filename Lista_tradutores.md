@@ -10,4 +10,4 @@
 |Clarice Groeneveld|@csgroen    | R Programming|Matrices_and_Data_Frames|     Sim        |
 | Kelin Gonçalves |@kelgoncalves| R Programming|       Vectors          |     Sim        |
 |Sheyla Trefflich|@sheylatrefflich|R Programming|  Subsetting_Vectors   |     Sim        |
-| Diogo B. Provete | @diogoprov  | Regression Models |  Residual_Variation    |     Não        |
+| Diogo B. Provete | @diogoprov  | Regression Models |  Introduction_to_Multivariable_Regression |     Não        |
