@@ -1,0 +1,147 @@
+- Class: meta
+  Course: Modelos de Regressão
+  Lesson: Fatores de Inflação da Variância
+  Author: Swirl Coders, Diogo B. Provete (Tradução)
+  Type: Standard
+  Organization: Johns Hopkins Bloomberg School of Public Health
+  Version: 2.2.0
+
+- Class: text
+  Output: "Fatores de Inflação da Variância. (Os slides desta e de outras disciplinas de Ciência de Dados, em inglês, estão no GitHub, em https://github.com/DataScienceSpecialization/courses. Se quiser usá-los, é preciso baixá-los como arquivo zip e abri-los no seu computador. Esta lição corresponde a Regression_Models/02_05_multipleVariables.)"
+
+- Class: text
+  Output: "Ao modelar, buscamos representações dos dados parcimoniosas e interpretáveis, que ampliem nosso entendimento do fenômeno estudado. Omitir variáveis causa viés nos coeficientes de interesse, a não ser que as preditoras incluídas não tenham correlação com as omitidas (ou que as omitidas não afetem a resposta). Por outro lado, incluir variáveis novas aumenta os erros-padrão (reais, não estimados) das outras preditoras sempre que elas são correlacionadas entre si. Por isso, não queremos jogar variáveis no modelo à toa. Esta lição trata do segundo desses dois problemas, conhecido como inflação da variância."
+
+- Class: text
+  Output: "Vamos usar simulações para mostrar a inflação da variância. O código das simulações está num arquivo chamado vifSims.R, que copiei para o seu diretório de trabalho e tentei abrir no seu editor. Se não consegui, abra o arquivo manualmente."
+
+- Class: mult_question
+  Output: "Encontre a função makelms, no início de vifSims.R. A última expressão de makelms cria 3 modelos lineares. O primeiro, lm(y ~ x1), prevê y em função de x1; o segundo, em função de x1 e x2; o terceiro, em função das três preditoras. O segundo coeficiente de cada modelo, por exemplo coef(lm(y ~ x1))[2], é extraído e devolvido num vetor de tamanho 3. O que esse segundo coeficiente representa?"
+  AnswerChoices: O coeficiente de x1.;O coeficiente do intercepto.;O coeficiente de x2.
+  CorrectAnswer: O coeficiente de x1.
+  AnswerTests: omnitest(correctVal='O coeficiente de x1.')
+  Hint: "O primeiro coeficiente é o do intercepto. Os demais seguem a ordem dada na fórmula."
+
+- Class: mult_question
+  Output: "Em makelms, a variável dependente simulada, y, depende de quais preditoras?"
+  AnswerChoices: x1;x1 e x2;x1, x2 e x3
+  CorrectAnswer: x1
+  AnswerTests: omnitest(correctVal='x1')
+  Hint: "A variável dependente, y, é criada pela expressão y <- x1 + rnorm(length(x1), sd = .3). Qual das preditoras, x1, x2 ou x3, aparece nessa expressão?"
+
+- Class: mult_question
+  Output: "Em vifSims.R, encontre as funções rgp1() e rgp2(). As duas geram 3 preditoras, x1, x2 e x3. Compare as linhas logo depois do comentário Ponto A, em rgp1(), com as que vêm depois do Ponto C, em rgp2(). Qual das afirmações sobre x1, x2 e x3 é verdadeira?"
+  AnswerChoices: x1, x2 e x3 não são correlacionadas em rgp1(), mas são em rgp2().;x1, x2 e x3 são correlacionadas em rgp1(), mas não em rgp2().;x1, x2 e x3 não são correlacionadas nem em rgp1() nem em rgp2().;x1, x2 e x3 são correlacionadas tanto em rgp1() quanto em rgp2().
+  CorrectAnswer: x1, x2 e x3 não são correlacionadas em rgp1(), mas são em rgp2().
+  AnswerTests: omnitest(correctVal='x1, x2 e x3 não são correlacionadas em rgp1(), mas são em rgp2().')
+  Hint: "Em rgp2(), nas linhas depois do Ponto C, x1 aparece nas expressões que criam x2 e x3. Em rgp1(), nas linhas depois do Ponto A, as preditoras vêm de chamadas independentes a rnorm(), que simula amostras independentes e identicamente distribuídas de uma distribuição normal."
+
+- Class: mult_question
+  Output: "Na linha depois do Ponto B, em rgp1(), a função makelms(x1, x2, x3) é aplicada 1000 vezes. A cada vez, ela simula uma nova variável dependente, y, e devolve as estimativas do coeficiente de x1 em cada um dos 3 modelos, y ~ x1, y ~ x1 + x2 e y ~ x1 + x2 + x3. Assim, ela calcula 1000 estimativas dos 3 coeficientes e junta os resultados numa matriz 3 x 1000, betas. Na linha seguinte, o que faz a expressão apply(betas, 1, var)?"
+  AnswerChoices: Calcula a variância de cada linha.;Calcula a variância de cada coluna.
+  CorrectAnswer: Calcula a variância de cada linha.
+  AnswerTests: omnitest(correctVal='Calcula a variância de cada linha.')
+  Hint: "Queremos mostrar o efeito de variáveis extras sobre a variância do coeficiente de x1. Para isso, temos 3 modelos, y ~ x1, y ~ x1 + x2 e y ~ x1 + x2 + x3. As três linhas de betas correspondem aos três modelos. As colunas correspondem às 1000 situações simuladas em que estimamos o coeficiente de x1 nos três modelos. O que nos interessa é a variância do coeficiente de x1 em cada um dos três modelos."
+
+- Class: cmd_question
+  Output: "A função rgp1() calcula a variância das estimativas do coeficiente de x1 em cada um dos três modelos, y ~ x1, y ~ x1 + x2 e y ~ x1 + x2 + x3. (Os resultados são arredondados para 5 casas decimais, para facilitar a leitura.) Essa simulação aproxima a variância (isto é, o erro-padrão ao quadrado) do coeficiente de x1 em cada um dos três modelos. Lembre que a inflação da variância vem de preditoras correlacionadas e que, em rgp1(), as preditoras não são correlacionadas. Rode agora a simulação rgp1(). Tenha paciência, pode demorar um pouco."
+  CorrectAnswer: rgp1()
+  AnswerTests: omnitest(correctExpr='rgp1()')
+  Hint: "Digite \"rgp1()\" no prompt do R."
+
+- Class: mult_question
+  Output: "As variâncias nos três modelos são praticamente iguais, como esperado, já que as outras preditoras, x2 e x3, não são correlacionadas com a preditora de interesse, x1. Em rgp2(), porém, x2 e x3 dependem de x1, então devemos esperar algum efeito. Pelas expressões que criam x2 e x3 depois do Ponto C, qual delas é mais fortemente correlacionada com x1?"
+  AnswerChoices: x3;x2
+  CorrectAnswer: x3
+  AnswerTests: omnitest(correctVal='x3')
+  Hint: "Em vifSims.R, olhe de novo as linhas depois do Ponto C e note que 1/sqrt(2), cerca de 0.71, na expressão de x2, é bem menor que 0.95, na expressão de x3. Esses números são as correlações teóricas de x2 e x3 com x1."
+
+- Class: cmd_question
+  Output: "Rode rgp2() para simular a variância do coeficiente de x1 quando x1 é correlacionada com as outras preditoras."
+  CorrectAnswer: rgp2()
+  AnswerTests: omnitest(correctExpr='rgp2()')
+  Hint: "Digite \"rgp2()\" no prompt do R."
+
+- Class: text
+  Output: "Neste caso, a inflação da variância causada pelas preditoras correlacionadas é clara, e é mais forte no terceiro modelo, y ~ x1 + x2 + x3, já que x3 é a preditora mais fortemente correlacionada com x1. Compare com rgp1() - a variância do coeficiente de x1 fica cerca de 2 vezes maior quando entra x2, e quase 9 vezes maior quando entra também x3."
+
+- Class: text
+  Output: "Nessas duas simulações, tínhamos 1000 estimativas dos coeficientes e por isso podíamos calcular a variância amostral para mostrar o efeito. Num caso real, temos um único conjunto de coeficientes e dependemos de estimativas teóricas. Só que as estimativas teóricas contêm uma constante de proporcionalidade desconhecida. Por isso usamos razões entre estimativas teóricas, chamadas Fatores de Inflação da Variância, ou VIFs (do inglês Variance Inflation Factors)."
+
+- Class: text
+  Output: "Um fator de inflação da variância (VIF) é uma razão entre variâncias estimadas - a variância do coeficiente da i-ésima preditora dividida pela variância que ele teria se essa preditora não fosse correlacionada com as outras. Os VIFs podem ser calculados diretamente, mas o pacote car tem uma função prática para isso, como vamos mostrar com os dados swiss, do pacote datasets."
+
+- Class: cmd_question
+  Output: "Segundo a documentação, os dados swiss trazem uma medida padronizada de fecundidade e indicadores socioeconômicos para cada uma das 47 províncias francófonas da Suíça, por volta de 1888, quando as taxas de fecundidade no país começaram a cair. Digite head(swiss) ou View(swiss) para examinar os dados."
+  CorrectAnswer: head(swiss)
+  AnswerTests: ANY_of_exprs('head(swiss)', 'View(swiss)')
+  Hint: "Digite \"head(swiss)\" ou \"View(swiss)\" no prompt do R."
+
+- Class: cmd_question
+  Output: "Pensava-se que a fecundidade (Fertility) dependia de cinco fatores socioeconômicos - a porcentagem de homens trabalhando na agricultura (Agriculture), a porcentagem de recrutas que tiraram a nota mais alta no exame do exército (Examination), a porcentagem de recrutas com escolaridade além do ensino primário (Education), a porcentagem da população católica (Catholic) e a mortalidade infantil (Infant.Mortality) na província. Use regressão linear para modelar Fertility em função dessas cinco preditoras e de um intercepto. Guarde o modelo numa variável chamada mdl."
+  CorrectAnswer: mdl <- lm(Fertility ~ ., swiss)
+  AnswerTests: creates_lm_model('mdl <- lm(Fertility ~ ., swiss)')
+  Hint: "O jeito mais fácil de modelar Fertility em função das cinco preditoras é digitar \"mdl <- lm(Fertility ~ ., swiss)\". O ponto depois do ~ significa todas as outras colunas dos dados; o intercepto entra por padrão."
+
+- Class: cmd_question
+  Output: "Calcule os VIFs de cada preditora usando vif(mdl)."
+  CorrectAnswer: vif(mdl)
+  AnswerTests: omnitest(correctExpr='vif(mdl)')
+  Hint: "Digite \"vif(mdl)\" no prompt do R."
+
+- Class: text
+  Output: "Esses VIFs mostram, para cada coeficiente, a inflação da variância causada pela inclusão de todas as outras preditoras. Por exemplo, a variância do coeficiente estimado de Education é 2.774943 vezes o que seria se Education não fosse correlacionada com as outras preditoras. Como escolaridade e nota no exame provavelmente são correlacionadas, podemos supor que a maior parte da inflação da variância de Education vem da inclusão de Examination."
+
+- Class: text
+  Output: "De onde vem esse número? O VIF da preditora j é 1/(1 - R2j), em que R2j é o R^2 da regressão da preditora j contra todas as outras preditoras (sem a resposta). Se a preditora j não tem nenhuma relação linear com as outras, R2j = 0 e o VIF = 1, o menor valor possível."
+
+- Class: cmd_question
+  Output: "Confira calculando à mão o VIF de Education. Ajuste um modelo de Education contra as outras quatro preditoras - a fórmula Education ~ . - Fertility usa todas as colunas, menos a resposta Fertility - e use o R^2 dele. Digite 1/(1 - summary(lm(Education ~ . - Fertility, swiss))$r.squared)."
+  CorrectAnswer: 1/(1 - summary(lm(Education ~ . - Fertility, swiss))$r.squared)
+  AnswerTests: calculates_same_value('1/(1 - summary(lm(Education ~ . - Fertility, swiss))$r.squared)')
+  Hint: "Digite \"1/(1 - summary(lm(Education ~ . - Fertility, swiss))$r.squared)\" no prompt do R."
+
+- Class: cmd_question
+  Output: "Faça um segundo modelo linear de Fertility, sem Examination, mas com as outras quatro preditoras. Guarde o resultado numa variável chamada mdl2."
+  CorrectAnswer: mdl2 <- lm(Fertility ~ . -Examination, swiss)
+  AnswerTests: creates_lm_model('mdl2 <- lm(Fertility ~ . -Examination, swiss)')
+  Hint: "O jeito mais fácil de modelar Fertility em função de todas as preditoras, menos Examination, é digitar \"mdl2 <- lm(Fertility ~ . -Examination, swiss)\". O ponto depois do ~ significa todas, e o sinal de menos antes de Examination significa exceto."
+
+- Class: cmd_question
+  Output: "Calcule os VIFs desse modelo usando vif(mdl2)."
+  CorrectAnswer: vif(mdl2)
+  AnswerTests: omnitest(correctExpr='vif(mdl2)')
+  Hint: "Digite \"vif(mdl2)\" no prompt do R."
+
+- Class: text
+  Output: "Como esperado, tirar Examination reduziu bastante o VIF de Education, de 2.774943 para 1.816361. Note que tirar Examination praticamente não mudou o VIF de Infant.Mortality. Provavelmente Examination e Infant.Mortality não são fortemente correlacionadas (de fato, a correlação entre elas é de cerca de -0.11). Antes de terminar a lição, vamos revisar alguns pontos importantes."
+
+- Class: text
+  Output: "Um aviso prático - é comum ver limites como 5 ou 10 para dizer que um VIF é alto. Eles são regras de bolso, não testes. O que importa é o efeito no erro-padrão do coeficiente que interessa à sua pergunta, lembrando que esse erro-padrão também depende do tamanho da amostra e da variância residual."
+
+- Class: mult_question
+  Output: "Um VIF descreve o aumento da variância de um coeficiente causado pela correlação da sua preditora com as outras preditoras. Qual é a relação entre o VIF e o erro-padrão do coeficiente?"
+  AnswerChoices: O VIF é o quadrado da inflação do erro-padrão.;São a mesma coisa.;Não há relação.
+  CorrectAnswer: O VIF é o quadrado da inflação do erro-padrão.
+  AnswerTests: omnitest(correctVal='O VIF é o quadrado da inflação do erro-padrão.')
+  Hint: "A variância é o quadrado do desvio-padrão, e o erro-padrão é o desvio-padrão de um coeficiente estimado. Por isso, um VIF de 4 dobra o erro-padrão."
+
+- Class: mult_question
+  Output: "Se uma preditora é fortemente correlacionada com as outras e, por isso, aumenta os VIFs delas, por que não simplesmente excluí-la?"
+  AnswerChoices: Excluí-la pode enviesar as estimativas dos coeficientes das preditoras com as quais ela é correlacionada.;Devemos sempre excluí-la.;Nunca devemos excluir nada.
+  CorrectAnswer: Excluí-la pode enviesar as estimativas dos coeficientes das preditoras com as quais ela é correlacionada.
+  AnswerTests: omnitest(correctVal='Excluí-la pode enviesar as estimativas dos coeficientes das preditoras com as quais ela é correlacionada.')
+  Hint: "Excluir uma preditora pode enviesar as estimativas dos coeficientes das preditoras correlacionadas com ela."
+
+- Class: mult_question
+  Output: "A inflação da variância e o viés por omissão de preditoras envolvem, ambos, preditoras correlacionadas. Mas existem métodos, como a análise fatorial ou a análise de componentes principais, que convertem as preditoras num conjunto equivalente sem correlação. Por que, então, não usar sempre preditoras sem correlação e evitar todo o problema?"
+  AnswerChoices: Usar preditoras convertidas pode dificultar a interpretação.;A análise fatorial exige cálculo demais.;Devemos sempre usar preditoras sem correlação.
+  CorrectAnswer: Usar preditoras convertidas pode dificultar a interpretação.
+  AnswerTests: omnitest(correctVal='Usar preditoras convertidas pode dificultar a interpretação.')
+  Hint: "Ao modelar, buscamos representações dos dados parcimoniosas e interpretáveis, que ampliem nosso entendimento do fenômeno estudado."
+
+- Class: text
+  Output: "Isso encerra o exercício sobre inflação da variância. A omissão de preditoras é discutida em outra lição."
+
+- Class: text
+  Output: "Parabéns! Você terminou esta lição sobre Fatores de Inflação da Variância."
