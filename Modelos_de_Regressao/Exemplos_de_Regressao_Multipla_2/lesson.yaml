@@ -1,0 +1,183 @@
+- Class: meta
+  Course: Modelos de Regressão
+  Lesson: Exemplos de Regressão Múltipla 2
+  Author: Swirl Coders, Diogo B. Provete (Tradução)
+  Type: Standard
+  Organization: Johns Hopkins Bloomberg School of Public Health
+  Version: 2.2.0
+
+- Class: text
+  Output: "Exemplos de Regressão Múltipla 2. (Os slides desta e de outras disciplinas de Ciência de Dados, em inglês, estão no GitHub, em https://github.com/DataScienceSpecialization/courses. Se quiser usá-los, é preciso baixá-los como arquivo zip e abri-los no seu computador. Esta lição corresponde a Regression_Models/02_02_multivariateExamples.)"
+
+- Class: text
+  Output: Esta é a segunda lição em que vamos ver modelos de regressão com mais de uma variável independente. Começamos com os dados InsectSprays, que tomamos a liberdade de carregar para você. Eles fazem parte do pacote datasets do R e mostram a eficácia de diferentes inseticidas (sprays). Usamos o código dos slides para mostrar um boxplot dos dados.
+
+- Class: exact_question
+  Output: Quantos inseticidas há nesse conjunto de dados?
+  CorrectAnswer: 6
+  AnswerTests: omnitest(correctVal=6)
+  Hint: Quantas letras há na sequência A, B, C, D, E, F?
+
+- Class: text_question
+  Output: Pelo boxplot, qual inseticida tem a maior mediana? (Digite só a letra.)
+  CorrectAnswer: B
+  AnswerTests: omnitest(correctVal='B')
+  Hint: A mediana de cada inseticida é a linha horizontal grossa dentro de cada caixa. Qual inseticida tem a mediana mais longe de 0?
+
+- Class: cmd_question
+  Output: Primeiro, vamos entender melhor o conjunto de dados InsectSprays. Use a função dim do R para ver as dimensões dos dados.
+  CorrectAnswer: dim(InsectSprays)
+  AnswerTests: omnitest(correctExpr='dim(InsectSprays)')
+  Hint: Digite "dim(InsectSprays)" no prompt do R.
+
+- Class: cmd_question
+  Output: A função dim diz que InsectSprays tem 72 linhas e 2 colunas. Use a função head do R para ver as 15 primeiras linhas de InsectSprays.
+  CorrectAnswer: head(InsectSprays,15)
+  AnswerTests: omnitest(correctExpr='head(InsectSprays,15)')
+  Hint: Digite "head(InsectSprays,15)" no prompt do R.
+
+- Class: cmd_question
+  Output: Então, esse conjunto de dados tem 72 contagens, cada uma associada a um inseticida. As contagens estão na primeira coluna, e a letra que identifica o inseticida, na segunda. Para poupar digitação, criamos 6 vetores só com as contagens de cada inseticida. Os vetores se chamam sx, em que x é A, B, C, D, E ou F. Digite o nome de um desses vetores (à sua escolha) para ver do que estamos falando.
+  CorrectAnswer: sA
+  AnswerTests: ANY_of_exprs('sA','sB','sC','sD','sE','sF')
+  Hint: Digite sB no prompt do R.
+
+- Class: cmd_question
+  Output: Como verificação, use a função summary do R na segunda coluna do conjunto de dados para ver quantas contagens há para cada inseticida. (Lembre que a expressão M[ ,2] devolve a segunda coluna de M.)
+  CorrectAnswer: summary(InsectSprays[,2])
+  AnswerTests: omnitest(correctExpr='summary(InsectSprays[,2])')
+  Hint: Digite "summary(InsectSprays[,2])" no prompt do R.
+
+- Class: text
+  Output: Não é surpresa que, com 72 contagens, haja 12 para cada um dos 6 inseticidas. Nesta lição, vamos ver fatores com vários níveis e como interpretar modelos lineares de dados com um fator de mais de 2 níveis.
+
+- Class: cmd_question
+  Output: Use a função sapply do R para descobrir as classes das colunas dos dados.
+  CorrectAnswer: sapply(InsectSprays,class)
+  AnswerTests: omnitest(correctExpr='sapply(InsectSprays,class)')
+  Hint: Digite "sapply(InsectSprays,class)" no prompt do R.
+
+- Class: text
+  Output: A classe da segunda coluna, "spray", é fator. Lembre dos slides que a equação que relaciona uma resposta a um fator com vários níveis usa variáveis binárias (indicadoras, ou dummy). Aqui temos um único fator, spray, com 6 níveis. Com o intercepto no modelo, bastam 5 variáveis indicadoras, uma para cada nível que não é o de referência. Cada uma indica se uma observação (uma contagem) pertence a um nível específico (um inseticida).
+
+- Class: cmd_question
+  Output: Usando a função lm do R, gere o modelo linear em que count é a variável dependente e spray é a independente. Lembre que, no R, a fórmula tem a forma y ~ x, em que y depende da preditora x. O conjunto de dados é InsectSprays. Guarde o modelo na variável fit.
+  CorrectAnswer: fit <- lm(count ~ spray, InsectSprays)
+  AnswerTests: creates_lm_model('fit <- lm(count ~ spray, InsectSprays)')
+  Hint: Digite "fit <- lm(count ~ spray, InsectSprays)" no prompt do R.
+
+- Class: cmd_question
+  Output: Usando a função summary do R, veja os coeficientes do modelo. Lembre que eles podem ser acessados com a construção x$coef.
+  CorrectAnswer: summary(fit)$coef
+  AnswerTests: omnitest(correctExpr='summary(fit)$coef')
+  Hint: Digite "summary(fit)$coef" no prompt do R.
+
+- Class: cmd_question
+  Output: Repare que o R devolve uma matriz 6 por 4. Por comodidade, guarde a primeira coluna dessa matriz, a coluna Estimate, numa variável chamada est. Lembre que a primeira coluna é acessada com x[,1].
+  CorrectAnswer: est <- summary(fit)$coef[,1]
+  AnswerTests: omnitest(correctExpr='est <- summary(fit)$coef[,1]')
+  Hint: Digite "est <- summary(fit)$coef[,1]" no prompt do R.
+
+- Class: text
+  Output: Repare que sprayA não aparece explicitamente na lista de estimativas. Mas ele está lá, como a primeira linha da coluna Estimate, com o rótulo "(Intercept)". Isso acontece porque sprayA é o primeiro, em ordem alfabética, na lista de níveis do fator, e o R usa por padrão o primeiro nível como referência, com a qual os outros níveis ou grupos são comparados nos testes t (mostrados na terceira coluna).
+
+- Class: cmd_question
+  Output: O que representam as estimativas desse modelo? Claro, elas são os coeficientes das variáveis binárias (indicadoras) associadas aos inseticidas. Mais importante, o intercepto é a média do grupo de referência, neste caso sprayA, e as outras estimativas são as distâncias entre a média de cada um dos outros grupos e a média de referência. Vamos verificar isso agora. Primeiro, calcule a média das contagens de sprayA. Lembre que as contagens estão nos vetores chamados sx. Queremos a média de sA.
+  CorrectAnswer: mean(sA)
+  AnswerTests: omnitest(correctExpr='mean(sA)')
+  Hint: Digite "mean(sA)" no prompt do R.
+
+- Class: mult_question
+  Output: Qual você acha que é a média de sprayB?
+  AnswerChoices: 15.3333;0.83333;-12.41667;Não faço a menor ideia
+  CorrectAnswer: 15.3333
+  AnswerTests: omnitest(correctVal='15.3333')
+  Hint: Somar o valor do intercepto à estimativa de sprayB dá a média observada de sprayB.
+
+- Class: cmd_question
+  Output: Confirme agora, usando a função mean do R para calcular a média de sprayB.
+  CorrectAnswer: mean(sB)
+  AnswerTests: omnitest(correctExpr='mean(sB)')
+  Hint: Digite "mean(sB)" no prompt do R.
+
+- Class: cmd_question
+  Output: Vamos gerar outro modelo com esses dados, desta vez sem o intercepto. É fácil fazer isso com a função lm do R, acrescentando " - 1" à fórmula, por exemplo, count ~ spray - 1. Isso diz ao R para omitir o intercepto; assim, todos os níveis ganham um coeficiente próprio. Faça isso agora e guarde o novo modelo na variável nfit.
+  CorrectAnswer: nfit <- lm(count ~ spray - 1, InsectSprays)
+  AnswerTests: creates_lm_model('nfit <- lm(count ~ spray - 1, InsectSprays)')
+  Hint: Digite "nfit <- lm(count ~ spray - 1, InsectSprays)" no prompt do R.
+
+- Class: cmd_question
+  Output: Agora, como antes, veja a parte dos coeficientes do resumo de nfit.
+  CorrectAnswer: summary(nfit)$coef
+  AnswerTests: omnitest(correctExpr='summary(nfit)$coef')
+  Hint: Digite "summary(nfit)$coef" no prompt do R.
+
+- Class: text
+  Output: Repare que agora sprayA aparece explicitamente na lista de estimativas. Repare também como os valores das colunas mudaram. As médias de todos os grupos aparecem explicitamente na coluna Estimate. Lembre que antes, com o intercepto, sprayA ficava de fora, sua média era o intercepto, e os valores dos outros inseticidas (estimativas, erros-padrão e testes t) eram todos calculados em relação a sprayA, o grupo de referência. Omitir o intercepto claramente mudou o modelo.
+
+- Class: mult_question
+  Output: Que valores a coluna Estimate mostra agora?
+  AnswerChoices: As médias dos 6 níveis;As variâncias dos 6 níveis;Não faço ideia
+  CorrectAnswer: As médias dos 6 níveis
+  AnswerTests: omnitest(correctVal='As médias dos 6 níveis')
+  Hint: Os números devem parecer familiares, principalmente os de sprayA e sprayB. Que valores você calculou para esses dois inseticidas?
+
+- Class: mult_question
+  Output: Sem intercepto (grupo de referência), os testes verificam se as contagens esperadas (as médias dos grupos) são diferentes de zero. Qual inseticida tem o resultado menos significativo?
+  AnswerChoices: sprayC;sprayF;sprayB;sprayA
+  CorrectAnswer: sprayC
+  AnswerTests: omnitest(correctVal='sprayC')
+  Hint: Qual inseticida tem o maior p-valor (coluna Pr(>|t|))?
+
+- Class: text
+  Output: Claramente, qual nível vem primeiro importa para o modelo. Se você quisesse outro grupo de referência, por exemplo para comparar sprayB com sprayC, poderia ajustar de novo o modelo com outra referência.
+
+- Class: cmd_question
+  Output: A função relevel do R faz exatamente isso. Ela reordena os níveis de um fator. Vamos usá-la agora, com dois argumentos. O primeiro é o fator, neste caso InsectSprays$spray, e o segundo é o nível que queremos que venha primeiro, neste caso "C". Guarde o resultado numa nova variável, spray2.
+  CorrectAnswer: spray2 <- relevel(InsectSprays$spray,"C")
+  AnswerTests: omnitest(correctExpr='spray2 <- relevel(InsectSprays$spray,"C")')
+  Hint: Digite "spray2 <- relevel(InsectSprays$spray,\"C\")" no prompt do R.
+
+- Class: cmd_question
+  Output: Agora gere um novo modelo linear, com spray2 como preditora, e guarde o resultado na variável fit2.
+  CorrectAnswer: fit2 <- lm(count ~ spray2, InsectSprays)
+  AnswerTests: creates_lm_model('fit2 <- lm(count ~ spray2, InsectSprays)')
+  Hint: Digite "fit2 <- lm(count ~ spray2, InsectSprays)" no prompt do R.
+
+- Class: cmd_question
+  Output: Como antes, veja a parte dos coeficientes do resumo desse novo modelo, fit2. Repare que agora sprayC é o intercepto (já que não aparece explicitamente na lista).
+  CorrectAnswer: summary(fit2)$coef
+  AnswerTests: omnitest(correctExpr='summary(fit2)$coef')
+  Hint: Digite "summary(fit2)$coef" no prompt do R.
+
+- Class: mult_question
+  Output: Segundo esse novo modelo, qual é a média de spray2C?
+  AnswerChoices: 2.083333;12.416667;14.583333;O modelo não informa.
+  CorrectAnswer: 2.083333
+  AnswerTests: omnitest(correctVal='2.083333')
+  Hint: Lembre que o intercepto é a média do grupo de referência, neste caso sprayC; então olhe o valor da linha (Intercept) na coluna Estimate.
+
+- Class: cmd_question
+  Output: Confirme sua resposta com a função mean do R, usando o vetor sC como argumento.
+  CorrectAnswer: mean(sC)
+  AnswerTests: omnitest(correctExpr='mean(sC)')
+  Hint: Digite "mean(sC)" no prompt do R.
+
+- Class: mult_question
+  Output: Segundo esse novo modelo, qual é a média de spray2A?
+  AnswerChoices: 14.50000;12.416667;14.583333;Não faço a menor ideia
+  CorrectAnswer: 14.50000
+  AnswerTests: omnitest(correctVal='14.50000')
+  Hint: Lembre que, quando há intercepto, a média de um nível que não é a referência é o intercepto + o coeficiente (estimativa) desse nível, neste caso spray2A; então é preciso somar dois números. Ou olhe de novo qual era a média no modelo original.
+
+- Class: text
+  Output: Lembre que, neste modelo, sprayC é o grupo de referência, então as estatísticas t (na coluna 3 dos coeficientes do resumo) comparam os outros inseticidas com sprayC. Elas podem ser calculadas à mão com as estimativas e o erro-padrão do modelo original (fit), que usava sprayA como referência.
+
+- Class: cmd_question
+  Output: Os slides mostram os detalhes disso, mas aqui vamos demonstrar calculando o valor t de spray2B. Subtraia o coeficiente de sprayC em fit (fit$coef[3]) do coeficiente de sprayB (fit$coef[2]) e divida pelo erro-padrão, que vimos ser 1.6011. O resultado é o valor t de spray2B. Faça isso agora.
+  CorrectAnswer: (fit$coef[2]-fit$coef[3])/1.6011
+  AnswerTests: omnitest(correctExpr='(fit$coef[2]-fit$coef[3])/1.6011')
+  Hint: Digite "(fit$coef[2]-fit$coef[3])/1.6011" no prompt do R.
+
+- Class: text
+  Output: Passamos por cima de alguns detalhes nesta lição. Por exemplo, contagens são números inteiros e nunca podem ser negativas, então a premissa de normalidade é violada. Vamos explorar essa questão quando falarmos de GLMs com distribuição de Poisson. Por enquanto, fique feliz por ter concluído esta segunda lição sobre modelos lineares com várias variáveis.
